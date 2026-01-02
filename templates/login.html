@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% block head %}
+<title>Login</title>
+<style>
+    .upload-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .upload-title {
+        font-size: 1.6rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-subtitle {
+        color: #c7d6d5;
+        margin-bottom: 2rem;
+    }
+
+    .file-input {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 1.2rem;
+    }
+
+    .file-input:focus {
+        box-shadow: none;
+        border-color: #ffffff;
+    }
+</style>
+{% endblock %} {% block body %}
+<div class="login-container">
+    <h1 class="login-title">Login</h1>
+
+    <!-- Role selection (GET request) -->
+    <form method="get" class="role-selector">
+        <button name="role" value="student">Student</button>
+        <button name="role" value="teacher">Teacher</button>
+        <button name="role" value="admin">Admin</button>
+    </form>
+
+    {% if role %}
+    <form method="post" action="/" class="login-form">
+        <input type="hidden" name="role" value="{{ role }}" />
+
+        <label>
+            Email ID:
+            <input type="text" name="email" required />
+        </label>
+
+        <label>
+            Password
+            <input type="password" name="password" required />
+        </label>
+
+        <button type="submit" class="submit-btn">
+            Login as {{ role|capitalize }}
+        </button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
