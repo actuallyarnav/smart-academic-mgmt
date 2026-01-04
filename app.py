@@ -1,6 +1,5 @@
 import os
 
-import psycopg2
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -12,6 +11,8 @@ from flask import (
     url_for,
 )
 
+from services.database import valid_login
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -21,41 +22,19 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 @app.route("/", methods=["POST", "GET"])
 def login():
-    select_sql = """SELECT id, password_hash, role
-    FROM users
-    WHERE email = %s AND role = %s;"""
     role = request.args.get("role")
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
         role = request.form["role"]
-        conn = psycopg2.connect(
-            dbname="student_db",
-            user="postgres",
-            password="pass123",
-            host="localhost",
-            port=5432,
-        )
 
-        cur = conn.cursor()
-        cur.execute(select_sql, (email, role))
-        user = cur.fetchone()
-        cur.close()
-        conn.close()
-
-        if user is None:
+        if not valid_login(role, email, password):
             flash("Invalid email, password, or role")
             return redirect(url_for("login", role=role))
-
-        user_id, stored_password, db_role = user
-        if stored_password != password:
-            flash("Invalid email, password, or role")
-            return redirect(url_for("login", role=role))
-
-        session["user_id"] = user_id
-        session["role"] = db_role
-
-        return redirect(f"/{db_role}/home")
+        else:
+            session["user_id"] = email
+            session["role"] = role
+            return redirect(f"/{role}/home")
 
     return render_template("login.html", role=role)
 
