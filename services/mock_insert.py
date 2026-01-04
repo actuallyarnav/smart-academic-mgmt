@@ -2,7 +2,7 @@ import json
 
 import psycopg2
 
-with open("seed_data.json", "r") as f:
+with open("local-testing/seed_data.json", "r") as f:
     data = json.load(f)
 
 
@@ -35,9 +35,10 @@ INSERT INTO Students (
     roll_number,
     batch,
     department,
-    admission_year
+    admission_year,
+    student_name
 )
-VALUES (%s, %s, %s, %s, %s);
+VALUES (%s, %s, %s, %s, %s, %s);
 """
 
 for student in data["students"]:
@@ -49,6 +50,7 @@ for student in data["students"]:
             student["batch"],
             student["department"],
             student["admission_year"],
+            student["name"],
         ),
     )
 
@@ -56,9 +58,10 @@ teacher_insert_sql = """
 INSERT INTO Teachers (
     user_id,
     department,
-    designation
+    designation,
+    teacher_name
 )
-VALUES (%s, %s, %s);
+VALUES (%s, %s, %s, %s);
 """
 
 for teacher in data["teachers"]:
@@ -68,6 +71,7 @@ for teacher in data["teachers"]:
             user_id_map[teacher["temp_user_id"]],
             teacher["department"],
             teacher["designation"],
+            teacher["name"],
         ),
     )
 

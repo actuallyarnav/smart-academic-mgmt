@@ -15,6 +15,7 @@ CREATE TABLE Users (
 CREATE TABLE Students (
     id SERIAL PRIMARY KEY,
     user_id INT UNIQUE NOT NULL REFERENCES Users(id) ON DELETE CASCADE,
+    student_name VARCHAR(50) NOT NULL,
     roll_number INT UNIQUE,
     batch TEXT,
     department TEXT,
@@ -25,6 +26,7 @@ CREATE TABLE Students (
 CREATE TABLE Teachers (
     id SERIAL PRIMARY KEY,
     user_id INT UNIQUE NOT NULL REFERENCES Users(id) ON DELETE CASCADE,
+    teacher_name VARCHAR(50) NOT NULL,
     department TEXT,
     designation TEXT
 );
@@ -63,14 +65,3 @@ CREATE TABLE Marks (
     last_updated_by INT NOT NULL references Teachers(id),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
--- RULES (for my own knowledge)
-
--- Students:
--- SELECT from students, enrollments, marks
--- WHERE students.user_id = current_user.id
-
--- Teachers:
--- UPDATE Marks of Subjects where teacher_subject exists, and Students is enrolled
-
--- Admin
--- everything.

@@ -11,7 +11,7 @@ from flask import (
     url_for,
 )
 
-from services.database import valid_login
+from services.database import get_student_details, get_teacher_details, valid_login
 
 load_dotenv()
 
@@ -41,12 +41,24 @@ def login():
 
 @app.route("/student/home")
 def student_home():
-    return render_template("student/home.html")
+    user_id = session.get("user_id")
+    if not user_id:
+        return "Unauthorized", 401
+    student = get_student_details(user_id)
+    if not student:
+        return "Student record not found", 404
+    return render_template("student/home.html", student=student)
 
 
 @app.route("/teacher/home")
 def teacher_home():
-    return render_template("teacher/home.html")
+    user_id = session.get("user_id")
+    if not user_id:
+        return "Unauthorized", 401
+    teacher = get_teacher_details(user_id)
+    if not teacher:
+        return "Teacher record not found", 404
+    return render_template("teacher/home.html", teacher=teacher)
 
 
 @app.route("/admin/home")

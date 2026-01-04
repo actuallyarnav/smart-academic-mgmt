@@ -68,5 +68,5 @@ for code, name, sem, credits in subjects:
         {"subject_code": code, "name": name, "semester": sem, "credits": credits}
     )
 
-with open("seed_data.json", "w") as f:
+with open("local-testing/seed_data.json", "w") as f:
     json.dump(data, f, indent=4)
