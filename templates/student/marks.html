@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block head %}
+<title>Student Marks</title>
+{%endblock%} {% block body %}
+
+<table>
+    <tr>
+        <th>Subject</th>
+        <th>Code</th>
+        <th>Marks</th>
+        <th>Grade</th>
+    </tr>
+
+    {% for subject, data in marks.items() %}
+    <tr>
+        <td>{{ subject }}</td>
+        <td>{{ data.subject_code }}</td>
+        <td>{{ data.marks }}</td>
+        <td>{{ data.grade }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('student_home') }}">Back to student home</a> {% endblock %}</p>

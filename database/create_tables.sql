@@ -65,3 +65,25 @@ CREATE TABLE Marks (
     last_updated_by INT NOT NULL references Teachers(id),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
+CREATE TABLE AttendanceSessions (
+    id SERIAL PRIMARY KEY,
+    subject_id INT NOT NULL REFERENCES Subjects(id),
+    teacher_id INT NOT NULL REFERENCES Teachers(id),
+    session_date DATE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now(),
+
+    UNIQUE (subject_id, session_date)
+);
+CREATE TABLE AttendanceRecords (
+    id SERIAL PRIMARY KEY,
+    attendance_session_id INT NOT NULL
+        REFERENCES AttendanceSessions(id) ON DELETE CASCADE,
+
+    enrollment_id INT NOT NULL
+        REFERENCES Enrollments(id) ON DELETE CASCADE,
+
+    status BOOLEAN NOT NULL,
+    marked_at TIMESTAMPTZ DEFAULT now(),
+
+    UNIQUE (attendance_session_id, enrollment_id)
+);
