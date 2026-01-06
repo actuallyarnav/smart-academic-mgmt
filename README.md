@@ -80,9 +80,9 @@ The system uses a relational database with the following core tables:
 7. Open `localhost:8080` in a browser, and et voila!
 
 ### Optional setup
-If you'd like to test this system using mock data, you can generate it using the `services/mock_gen.py` script. This will create a JSON file with mock data (Users, students, teachers, )
+If you'd like to test this system using mock data, you can generate it using the scripts in the `gen-mock-data` directory. They will create a JSON file with mock data (Users, students, teachers, subjects), and then they will also insert the data in the PostgreSQL database.
 
-To insert this data into your PostgreSQL database, you can use the `services/mock_insert.py` script. **Keep in mind you wil need to first create the `student_db` database, and update the database credentials in the script to match your own.**
+**Keep in mind you wil need to first create the `student_db` database, and update the database credentials in the script to match your own.**
 
 
 ## Future Enhancements
