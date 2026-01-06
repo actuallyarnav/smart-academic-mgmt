@@ -1,3 +1,4 @@
+# imports n stuff
 import os
 
 from dotenv import load_dotenv
@@ -12,12 +13,16 @@ from flask import (
 )
 
 from services.database import (
-    get_student_details,
-    get_student_marks,
-    get_teacher_details,
     valid_login,
 )
+from services.student_utils import (
+    calculate_student_percentage,
+    get_student_details,
+    get_student_marks,
+)
+from services.teacher_utils import get_teacher_details
 
+# config n stuff
 load_dotenv()
 
 app = Flask(__name__)
@@ -25,6 +30,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 
+# error handlers because i like custom error pages
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("error/404.html"), 404
@@ -35,6 +41,7 @@ def forbidden(e):
     return render_template("error/403.html"), 403
 
 
+# main route, login page
 @app.route("/", methods=["POST", "GET"])
 def login():
     role = request.args.get("role")
@@ -54,6 +61,7 @@ def login():
     return render_template("login.html", role=role)
 
 
+# student home
 @app.route("/student/home")
 def student_home():
     user_id = session.get("user_id")
@@ -65,6 +73,7 @@ def student_home():
     return render_template("student/home.html", student=student)
 
 
+# marks for student
 @app.route("/student/marks")
 def student_marks():
     user_id = session.get("user_id")
@@ -73,7 +82,8 @@ def student_marks():
     marks = get_student_marks(user_id)
     if not marks:
         return "Marks record not found", 404
-    return render_template("student/marks.html", marks=marks)
+    percentage = calculate_student_percentage(user_id)
+    return render_template("student/marks.html", marks=marks, percentage=percentage)
 
 
 @app.route("/teacher/home")
@@ -97,5 +107,6 @@ def about():
     return render_template("about.html")
 
 
+# main function, run dat code for me 5
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
