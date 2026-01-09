@@ -7,3 +7,4 @@ keys/
 __pycache__/
 */__pycache__/
 local-testing/
+gen-mock-data/

@@ -1,4 +1,4 @@
-from services.database import get_db_conn
+from services.database import execute_one, execute_query
 
 
 def calculate_student_percentage(user_id):
@@ -12,33 +12,29 @@ def calculate_student_percentage(user_id):
     JOIN Subjects sub ON sub.id = e.subject_id
     WHERE u.email = %s;
     """
-    conn = get_db_conn()
-    cur = conn.cursor()
-    cur.execute(query, ("cdutt@example.net",))
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
-    total_marks = sum(sum(tup) for tup in rows)
+
+    rows = execute_query(query, (user_id,))
+    total_marks = 0
+    for row in rows:
+        total_marks += row["marks_obtained"]
+
     average = total_marks / len(rows)
     return average
 
 
 def get_student_details(uid):
-    get_details_query = """SELECT
+    get_details_query = """select
         s.student_name,
         s.roll_number,
-        s.batch,
-        s.department,
-        s.admission_year
-    FROM Users u
-    JOIN Students s ON s.user_id = u.id
-    WHERE u.email = %s;"""
-    conn = get_db_conn()
-    cur = conn.cursor()
-    cur.execute(get_details_query, (uid,))
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
+        c.department,
+        c.year_label,
+        c.semester
+    from users u
+    join students s on s.user_id = u.id
+    join classes c on s.class_id = c.id
+    where u.email = %s;
+"""
+    row = execute_one(get_details_query, (uid,))
 
     if not row:
         return None
@@ -69,21 +65,16 @@ def get_student_marks(user_id):
 
     """
 
-    conn = get_db_conn()
-    cur = conn.cursor()
-    cur.execute(query, (user_id,))
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    rows = execute_query(query, (user_id,))
 
     marks = {}
 
-    for subject_id, name, code, obtained, grade in rows:
-        marks[name] = {
-            "subject_id": subject_id,
-            "subject_code": code,
-            "marks": obtained,
-            "grade": grade,
+    for row in rows:
+        marks[row["name"]] = {
+            "subject_id": row["id"],
+            "subject_code": row["subject_code"],
+            "marks": row["marks_obtained"],
+            "grade": row["grade"],
         }
 
     return marks

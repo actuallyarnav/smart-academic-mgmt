@@ -1,6 +1,12 @@
 {% extends "base.html" %} {% block head %}
 <title>Login</title>
 <style>
+    .mainBody {
+        position: relative;
+        width: 100%;
+        min-height: 80vh;
+        padding: 20px;
+    }
     .upload-wrapper {
         max-width: 720px;
         margin: 0 auto;
@@ -27,36 +33,51 @@
         box-shadow: none;
         border-color: #ffffff;
     }
+    .secret-admin-login {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+    }
 </style>
 {% endblock %} {% block body %}
-<div class="login-container">
-    <h1 class="login-title">Login</h1>
+<div class="mainBody">
+    <div class="secret-admin-login">
+        <a
+            href="{{ url_for('admin.admin_home') }}"
+            title="super secret admin access button (DEV)"
+            class="button btn-custom"
+        ></a>
+    </div>
+    <div class="login-container">
+        <h1 class="login-title">Login</h1>
 
-    <!-- Role selection (GET request) -->
-    <form method="get" class="role-selector">
-        <button name="role" value="student">Student</button>
-        <button name="role" value="teacher">Teacher</button>
-        <button name="role" value="admin">Admin</button>
-    </form>
+        <!-- Role selection (GET request) -->
+        <form method="get" class="role-selector">
+            <button name="role" value="student">Student</button>
+            <button name="role" value="teacher">Teacher</button>
+            <button name="role" value="admin">Admin</button>
+        </form>
 
-    {% if role %}
-    <form method="post" action="/" class="login-form">
-        <input type="hidden" name="role" value="{{ role }}" />
+        {% if role %}
+        <form method="post" action="/" class="login-form">
+            <input type="hidden" name="role" value="{{ role }}" />
 
-        <label>
-            Email ID:
-            <input type="text" name="email" required />
-        </label>
+            <label>
+                Email ID:
+                <input type="text" name="email" required />
+            </label>
 
-        <label>
-            Password
-            <input type="password" name="password" required />
-        </label>
+            <label>
+                Password
+                <input type="password" name="password" required />
+            </label>
 
-        <button type="submit" class="submit-btn">
-            Login as {{ role|capitalize }}
-        </button>
-    </form>
-    {% endif %}
+            <button type="submit" class="submit-btn">
+                Login as {{ role|capitalize }}
+            </button>
+        </form>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

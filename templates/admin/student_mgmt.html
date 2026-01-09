@@ -1,0 +1,129 @@
+{% extends "base.html" %} {% block head %} <title>Manage Students</title>
+<style>
+    .admin-page {
+        max-width: 1100px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h1 {
+        flex: 1;
+        font-size: 1.6rem;
+    }
+
+    .search-form input {
+        padding: 0.4rem;
+        font-size: 0.9rem;
+    }
+
+    .search-form button {
+        padding: 0.45rem 0.7rem;
+    }
+
+    .add-btn {
+        padding: 0.45rem 0.8rem;
+        background: #111;
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        border: 1px solid #ccc;
+        padding: 0.6rem;
+        text-align: left;
+    }
+
+    .admin-table th {
+        background: #808080;
+    }
+
+    .actions a {
+        margin-right: 0.6rem;
+        text-decoration: none;
+    }
+
+    .actions a:last-child {
+        color: #b00020;
+    }
+
+    .empty {
+        text-align: center;
+        color: #666;
+    }
+</style>
+{% endblock %} {% block body %}
+<form method="get" class="sort-bar">
+    <label>
+        Sort by
+        <select name="sort_by" onchange="this.form.submit()">
+            <option value="semester" {{ 'selected' if sort_by == 'semester' }}>Semester</option>
+            <option value="name" {{ 'selected' if sort_by == 'name' }}>Name</option>
+            <option value="roll" {{ 'selected' if sort_by == 'roll' }}>Roll Number</option>
+        </select>
+    </label>
+
+    <label>
+        Order
+        <select name="order" onchange="this.form.submit()">
+            <option value="asc" {{ 'selected' if order == 'asc' }}>Ascending</option>
+            <option value="desc" {{ 'selected' if order == 'desc' }}>Descending</option>
+        </select>
+    </label>
+</form>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Year</th>
+            <th>Semester</th>
+            <th>Department</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in students %}
+
+        <tr>
+            <td>{{ s.id }}</td>
+            <td>{{ s.student_name }}</td>
+            <td>{{ s.roll_number }}</td>
+            <td>{{ s.year_label }}</td>
+            <td>{{ s.semester }}</td>
+            <td>{{ s.department }}</td>
+        </tr>
+
+        {% else %}
+        <tr>
+            <td colspan="6">No students found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="?page={{ page-1 }}&sort_by={{ sort_by }}&order={{ order }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+        <a href="?page={{ page+1 }}&sort_by={{ sort_by }}&order={{ order }}">Next</a>
+    {% endif %}
+</div>
+{% endblock %}

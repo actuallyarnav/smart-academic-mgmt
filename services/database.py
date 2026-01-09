@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extras import DictCursor
 
 
 def get_db_conn():
@@ -41,3 +42,54 @@ def valid_login(role, user_id, password):
         return 0
 
     return 1
+
+
+def execute_query(sql, params=None):
+    """
+    Use this for queries that return multiple rows.
+    Tables, Marks, etc. all should use this
+    Returns:
+        dict: dict of rows, colnames are keys
+    """
+    conn = get_db_conn()
+    try:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, params)
+            return cur.fetchall()
+    finally:
+        conn.close()
+
+
+def execute_one(sql, params=None):
+    """
+    Use this for queries that return just one row.
+    Checking login, single student/teacher details, etc.
+
+    Returns:
+        dict: dict containing a single row.
+    """
+    conn = get_db_conn()
+    try:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, params)
+            row = cur.fetchone()
+            return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def execute_scalar(sql, params=None):
+    """
+    Use this to return a single value only.
+    Returning counts, all that kinda stuff.
+    Returns:
+        any: int, string, float, whatever you ask of it.
+    """
+    conn = get_db_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            result = cur.fetchone()
+            return result[0] if result else None
+    finally:
+        conn.close()

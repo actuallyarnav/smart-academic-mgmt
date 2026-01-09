@@ -12,25 +12,29 @@ from flask import (
     url_for,
 )
 
-from services.database import (
-    valid_login,
-)
-from services.student_utils import (
-    calculate_student_percentage,
-    get_student_details,
-    get_student_marks,
-)
-from services.teacher_utils import get_teacher_details
+# blueprints
+from routes.admin import admin_bp
+from routes.student import student_bp
+from routes.teacher import teacher_bp
+
+# my own utils
+from services.database import valid_login
 
 # config n stuff
+# i probably dont need to make a config.py seeing as its just 3 lines
+# for now at least
 load_dotenv()
-
 app = Flask(__name__)
-
 app.secret_key = os.getenv("SECRET_KEY")
+
+# blueprint register
+app.register_blueprint(student_bp)
+app.register_blueprint(teacher_bp)
+app.register_blueprint(admin_bp)
 
 
 # error handlers because i like custom error pages
+# TODO: add ability to display custom messages for different usecases
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("error/404.html"), 404
@@ -46,7 +50,7 @@ def forbidden(e):
 def login():
     role = request.args.get("role")
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].strip()
         password = request.form["password"]
         role = request.form["role"]
 
@@ -61,47 +65,7 @@ def login():
     return render_template("login.html", role=role)
 
 
-# student home
-@app.route("/student/home")
-def student_home():
-    user_id = session.get("user_id")
-    if not user_id:
-        return "Forbidden", 403
-    student = get_student_details(user_id)
-    if not student:
-        return "Student record not found", 404
-    return render_template("student/home.html", student=student)
-
-
-# marks for student
-@app.route("/student/marks")
-def student_marks():
-    user_id = session.get("user_id")
-    if not user_id:
-        return "Forbidden", 403
-    marks = get_student_marks(user_id)
-    if not marks:
-        return "Marks record not found", 404
-    percentage = calculate_student_percentage(user_id)
-    return render_template("student/marks.html", marks=marks, percentage=percentage)
-
-
-@app.route("/teacher/home")
-def teacher_home():
-    user_id = session.get("user_id")
-    if not user_id:
-        return "Unauthorized", 401
-    teacher = get_teacher_details(user_id)
-    if not teacher:
-        return "Teacher record not found", 404
-    return render_template("teacher/home.html", teacher=teacher)
-
-
-@app.route("/admin/home")
-def admin_home():
-    return render_template("admin/home.html")
-
-
+# about this project
 @app.route("/about", methods=["POST", "GET"])
 def about():
     return render_template("about.html")

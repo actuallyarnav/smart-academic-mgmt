@@ -1,4 +1,4 @@
-from services.database import get_db_conn
+from services.database import execute_one
 
 
 def get_teacher_details(uid):
@@ -16,18 +16,13 @@ def get_teacher_details(uid):
     FROM Users u
     JOIN Teachers t ON t.user_id = u.id
     WHERE u.email = %s;"""
-    conn = get_db_conn()
-    cur = conn.cursor()
-    cur.execute(get_details_query, (uid,))
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
+    row = execute_one(get_details_query, (uid,))
 
     if not row:
         return None
     teacher = {
-        "name": row[0],
-        "department": row[1],
-        "designation": row[2],
+        "name": row["teacher_name"],
+        "department": row["department"],
+        "designation": row["designation"],
     }
     return teacher
