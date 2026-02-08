@@ -65,19 +65,26 @@ The system uses a relational database with the following core tables:
 
 1. Clone the repository
 2. Create a PostgreSQL database called `student_db`
-3. Run the SQL commands provided in `create-tables.sql`, or just use `\i  database/create-tables.sql` to run the file itself
+3. Run the SQL commands provided in `create_tables.sql`, or just use `\i  database/create_tables.sql` to run the file itself
 4. Configure database credentials in the Flask app
 5. Install dependencies (preferably in a virtual environment, but you do you):
 
    ```
     pip install -r requirements.txt
    ```
-6. Run the application:
+6. Or, use `uv` to create and run the environment:
+
+   ```
+   uv venv
+   source .venv/bin/activate
+   uv pip install -r requirements.txt
+   ```
+7. Run the application:
 
    ```
    python3 app.py
    ```
-7. Open `localhost:8080` in a browser, and et voila!
+8. Open `localhost:8080` in a browser, and et voila!
 
 ## Future Enhancements
 This is still a work-in-progress. 

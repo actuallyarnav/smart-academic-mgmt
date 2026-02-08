@@ -45,6 +45,11 @@ def forbidden(e):
     return render_template("error/403.html"), 403
 
 
+@app.errorhandler(401)
+def unauthorized(e):
+    return render_template("error/401.html"), 401
+
+
 # main route, login page
 @app.route("/", methods=["POST", "GET"])
 def login():

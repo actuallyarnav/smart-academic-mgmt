@@ -1,6 +1,6 @@
 from math import ceil
 
-from flask import Blueprint, abort, render_template, request
+from flask import Blueprint, abort, render_template, request, session
 
 from services.database import execute_query, execute_scalar
 

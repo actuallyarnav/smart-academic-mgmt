@@ -13,8 +13,9 @@ student_bp = Blueprint("student", __name__)
 @student_bp.route("/student/home")
 def student_home():
     user_id = session.get("user_id")
-    if not user_id:
-        abort(403)
+    role = session.get("role")
+    if not user_id or role != "student":
+        abort(401)
     student = get_student_details(user_id)
     if not student:
         abort(404)
@@ -25,10 +26,29 @@ def student_home():
 @student_bp.route("/student/marks")
 def student_marks():
     user_id = session.get("user_id")
-    if not user_id:
-        abort(403)
+    role = session.get("role")
+    if not user_id or role != "student":
+        abort(401)
     marks = get_student_marks(user_id)
     if not marks:
         abort(404)
     percentage = calculate_student_percentage(user_id)
     return render_template("student/marks.html", marks=marks, percentage=percentage)
+
+
+@student_bp.route("/student/attendance")
+def student_attendance():
+    user_id = session.get("user_id")
+    role = session.get("role")
+    if not user_id or role != "student":
+        abort(401)
+    abort(404)
+
+
+@student_bp.route("/student/performance")
+def student_performance():
+    user_id = session.get("user_id")
+    role = session.get("role")
+    if not user_id or role != "student":
+        abort(401)
+    abort(404)

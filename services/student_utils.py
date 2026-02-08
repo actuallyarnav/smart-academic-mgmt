@@ -14,36 +14,38 @@ def calculate_student_percentage(user_id):
     """
 
     rows = execute_query(query, (user_id,))
-    total_marks = 0
-    for row in rows:
-        total_marks += row["marks_obtained"]
+    marks = [row["marks_obtained"] for row in rows if row["marks_obtained"] is not None]
+    if not marks:
+        return 0
 
-    average = total_marks / len(rows)
+    average = sum(marks) / len(marks)
     return average
 
 
 def get_student_details(uid):
-    get_details_query = """select
-        s.student_name,
-        s.roll_number,
-        c.department,
-        c.year_label,
-        c.semester
-    from users u
-    join students s on s.user_id = u.id
-    join classes c on s.class_id = c.id
-    where u.email = %s;
+    get_details_query = """SELECT
+        s.student_name AS student_name,
+        s.roll_number AS roll_number,
+        c.department AS department,
+        c.year_label AS year_label,
+        c.semester AS semester,
+        c.admission_year AS admission_year
+    FROM users u
+    JOIN students s ON s.user_id = u.id
+    JOIN classes c ON s.class_id = c.id
+    WHERE u.email = %s;
 """
     row = execute_one(get_details_query, (uid,))
 
     if not row:
         return None
     student = {
-        "name": row[0],
-        "roll_number": row[1],
-        "batch": row[2],
-        "department": row[3],
-        "admission_year": row[4],
+        "name": row["student_name"],
+        "roll_number": row["roll_number"],
+        "department": row["department"],
+        "year_label": row["year_label"],
+        "semester": row["semester"],
+        "admission_year": row["admission_year"],
     }
     return student
 
