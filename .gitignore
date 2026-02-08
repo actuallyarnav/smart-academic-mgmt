@@ -1,5 +1,5 @@
 env/
-venv/
+.venv/
 static/uploads/
 .env
 test/
@@ -8,3 +8,4 @@ __pycache__/
 */__pycache__/
 local-testing/
 gen-mock-data/
+uv.lock

@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block head %}
+<title>Add Marks</title>
+<style>
+    .student-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .student-table th,
+    .student-table td {
+        border: 1px solid #ccc;
+        padding: 0.6rem;
+        text-align: left;
+    }
+
+    .student-table th {
+        background: #808080;
+    }
+</style>
+{%endblock%} {% block body %}
+
+<form method="get" class="sort-bar">
+    <label
+        <!-- prettier-ignore -->
+            <!--i was trying to figure out why this wasnt working all this time-->
+            <!--damn you prettier -->
+        Select Class
+        <select name="class_select" onchange="this.form.submit()">
+            {% for c in classes %}
+            <option
+                value="{{ c.id }}"
+                {{ "selected" if c.id == selected_class else "" }}>
+                {{c.year_label}}-{{c.department}}-{{c.admission_year}}
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <table class="student-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll No</th>
+                <th>Year</th>
+                <th>Semester</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+
+            <tr>
+                <td>{{ s.student_id }}</td>
+                <td>{{ s.student_name }}</td>
+                <td>{{ s.roll_number }}</td>
+                <td>{{ s.year_label }}</td>
+                <td>{{ s.semester }}</td>
+                <td>{{ s.department }}</td>
+            </tr>
+
+            {% else %}
+            <tr>
+                <td colspan="6">No students found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}
+</form>
