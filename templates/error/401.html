@@ -1,5 +1,10 @@
-{% extends "base.html" %} {% block title %}Page Not Found{% endblock %} {% block
-body %}
-<h1>401 - Unauthorized</h1>
-<p>Insert funny quote here i guess</p>
-<p><a href="{{ url_for('login') }}">Back to login</a> {% endblock %}</p>
+{% extends "base.html" %} {% block head %}
+<title>401 - Unauthorized</title>
+{% endblock %} {% block body %}
+<div class="section-block error-shell">
+    <div class="error-code">401</div>
+    <h1 class="page-title error-title">Unauthorized</h1>
+    <p class="muted">You need to sign in before accessing this page.</p>
+    <a class="btn-app" href="{{ url_for('login') }}">Back to login</a>
+</div>
+{% endblock %}

@@ -1,16 +1,15 @@
 {% extends "base.html" %} {% block head %}
 <title>Admin Home</title>
 {%endblock%} {% block body %}
-<h1>Welcome, Admin</h1>
+<h1 class="page-title">Admin Dashboard</h1>
+<p class="page-subtitle">Select a management area.</p>
 
-<div class="options">
-    <a href="/admin/student_mgmt" class="button">Manage Students</a>
-    <br />
-    <a href="/admin/teacher_mgmt" class="button">Manage Teachers</a>
-    <br />
-    <a href="/admin/class_mgmt" class="button">Manage Class</a>
-    <br />
-    <a href="/admin/subject_mgmt" class="button">Manage Subjects</a>
-    <br />
+<div class="section-block">
+    <ul class="action-list">
+        <li><a href="/admin/student_mgmt">Manage Students</a></li>
+        <li><a href="/admin/teacher_mgmt">Manage Teachers</a></li>
+        <li><a href="/admin/class_mgmt">Manage Classes</a></li>
+        <li><a href="/admin/subject_mgmt">Manage Subjects</a></li>
+    </ul>
 </div>
 {% endblock %}

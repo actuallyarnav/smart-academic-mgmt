@@ -1,24 +1,47 @@
 {% extends "base.html" %} {% block head %}
 <title>Student Marks</title>
 {%endblock%} {% block body %}
+<h1 class="page-title">Marks</h1>
+<p class="page-subtitle">Subject-wise marks and grades.</p>
 
-<table>
-    <tr>
-        <th>Subject</th>
-        <th>Code</th>
-        <th>Marks</th>
-        <th>Grade</th>
-    </tr>
+<div class="section-block mb-3">
+    <div
+        class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3"
+    >
+        <h2 class="section-heading mb-0">Academic Performance</h2>
+        <span class="status-pill"
+            >Overall Percentage: {{ percentage|round(2) }}%</span
+        >
+    </div>
+    <div class="app-table-wrap">
+        <table class="app-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Code</th>
+                    <th>Marks</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject, data in marks.items() %}
+                <tr>
+                    <td>{{ subject }}</td>
+                    <td>{{ data.subject_code }}</td>
+                    <td>{{ data.marks }}</td>
+                    <td>{{ data.grade }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No marks found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    {% for subject, data in marks.items() %}
-    <tr>
-        <td>{{ subject }}</td>
-        <td>{{ data.subject_code }}</td>
-        <td>{{ data.marks }}</td>
-        <td>{{ data.grade }}</td>
-    </tr>
-    {% endfor %}
-</table>
-<h3>Percentage: {{percentage}}%</h3>
-<a href="{{ url_for('student.student_home') }}">Back to student home</a>
+<a class="btn-outline-app" href="{{ url_for('student.student_home') }}"
+    >Back to student home</a
+>
 {% endblock %}

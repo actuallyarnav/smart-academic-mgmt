@@ -1,83 +1,124 @@
 {% extends "base.html" %} {% block head %}
 <title>Login</title>
 <style>
-    .mainBody {
+    .login-shell {
         position: relative;
-        width: 100%;
-        min-height: 80vh;
-        padding: 20px;
-    }
-    .upload-wrapper {
-        max-width: 720px;
+        max-width: 760px;
         margin: 0 auto;
     }
 
-    .upload-title {
-        font-size: 1.6rem;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
+    .login-form label {
+        display: block;
+        font-size: 0.88rem;
+        color: var(--muted-color);
+        margin-bottom: 0.35rem;
     }
 
-    .upload-subtitle {
-        color: #c7d6d5;
-        margin-bottom: 2rem;
-    }
-
-    .file-input {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        padding: 1.2rem;
-    }
-
-    .file-input:focus {
-        box-shadow: none;
-        border-color: #ffffff;
-    }
     .secret-admin-login {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 0.35rem;
+        right: 0.35rem;
         z-index: 10;
+    }
+
+    .secret-admin-btn {
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        background-color: var(--surface-color);
+        opacity: 0.35;
+    }
+
+    .secret-admin-btn:hover {
+        opacity: 0.9;
+        border-color: var(--accent-color);
+    }
+
+    .role-selector button {
+        min-width: 125px;
     }
 </style>
 {% endblock %} {% block body %}
-<div class="mainBody">
+<section class="login-shell">
     <div class="secret-admin-login">
         <a
             href="{{ url_for('admin.admin_home') }}"
             title="super secret admin access button (DEV)"
-            class="button btn-custom"
+            class="secret-admin-btn"
         ></a>
     </div>
-    <div class="login-container">
-        <h1 class="login-title">Login</h1>
 
-        <!-- Role selection (GET request) -->
-        <form method="get" class="role-selector">
-            <button name="role" value="student">Student</button>
-            <button name="role" value="teacher">Teacher</button>
-            <button name="role" value="admin">Admin</button>
+    <h1 class="page-title">Smart Academic Management System</h1>
+    <p class="page-subtitle">
+        Sign in to continue with your institutional account.
+    </p>
+
+    <div class="section-block">
+        <h2 class="section-heading">Choose Role</h2>
+        <form method="get" class="button-group role-selector mb-3">
+            <button
+                class="{{ 'btn-app' if role == 'student' else 'btn-outline-app' }}"
+                name="role"
+                value="student"
+                type="submit"
+            >
+                Student
+            </button>
+            <button
+                class="{{ 'btn-app' if role == 'teacher' else 'btn-outline-app' }}"
+                name="role"
+                value="teacher"
+                type="submit"
+            >
+                Teacher
+            </button>
+            <button
+                class="{{ 'btn-app' if role == 'admin' else 'btn-outline-app' }}"
+                name="role"
+                value="admin"
+                type="submit"
+            >
+                Admin
+            </button>
         </form>
 
         {% if role %}
-        <form method="post" action="/" class="login-form">
+        <form method="post" action="/" class="login-form row g-3">
             <input type="hidden" name="role" value="{{ role }}" />
 
-            <label>
-                Email ID:
-                <input type="text" name="email" required />
-            </label>
+            <div class="col-12 col-md-6">
+                <label for="email">Email ID</label>
+                <input
+                    id="email"
+                    class="form-control"
+                    type="text"
+                    name="email"
+                    required
+                />
+            </div>
 
-            <label>
-                Password
-                <input type="password" name="password" required />
-            </label>
+            <div class="col-12 col-md-6">
+                <label for="password">Password</label>
+                <input
+                    id="password"
+                    class="form-control"
+                    type="password"
+                    name="password"
+                    required
+                />
+            </div>
 
-            <button type="submit" class="submit-btn">
-                Login as {{ role|capitalize }}
-            </button>
+            <div class="col-12">
+                <button type="submit" class="btn-app">
+                    Login as {{ role|capitalize }}
+                </button>
+            </div>
         </form>
+        {% else %}
+        <p class="muted mb-0">Select a role to load the sign-in form.</p>
         {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

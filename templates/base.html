@@ -12,72 +12,308 @@
 
         <style>
             :root {
-                --button-color: #ef6f6c;
-                --button-focus: #a20111;
-                --background-color: #121212;
-                --text-color: #ecebf3;
+                --background-color: #10161f;
+                --surface-color: #18212d;
+                --surface-color-2: #202c3b;
+                --border-color: #2d3b4c;
+                --text-color: #e8edf5;
+                --muted-color: #9aabc0;
+                --accent-color: #4a8eff;
+                --accent-hover: #3e79d6;
+                --danger-color: #d16a78;
+                --radius: 0.65rem;
             }
 
             body {
                 background-color: var(--background-color);
                 color: var(--text-color);
+                font-family:
+                    "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+                min-height: 100vh;
             }
 
-            table {
-                padding: 15px;
-                margin: 15px;
+            a {
+                color: #93b9ff;
+                text-decoration: none;
             }
 
-            .btn-custom {
-                background-color: var(--button-color);
-                border-color: var(--button-color);
-                padding: 0.8rem 1.5rem;
-                font-size: 0.95rem;
-            }
-            .btn-custom:active {
-                box-shadow: none;
-            }
-            .btn-custom:active:focus {
-                background-color: var(--button-color);
-                border-color: var(--button-color);
-            }
-            .btn-custom:hover {
-                background-color: var(--button-focus);
-                border-color: var(--button-focus);
+            a:hover {
+                color: #bfd5ff;
             }
 
             .mainbody {
-                max-width: 1200px;
+                max-width: 1160px;
                 margin: 0 auto;
-                padding: 0 2rem;
+                padding: 0 1.25rem;
             }
 
             .navbar {
-                padding: 1.5rem 0;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 1rem 0;
+                border-bottom: 1px solid var(--border-color);
+                background-color: var(--background-color);
             }
 
             .navbar-brand {
-                font-weight: 600;
+                font-weight: 700;
                 letter-spacing: 0.02em;
             }
 
             .nav-link {
-                color: #b5b5b5;
+                color: var(--muted-color);
+                border-radius: var(--radius);
+                padding: 0.35rem 0.7rem;
             }
 
             .nav-link:hover {
-                color: #ffffff;
-            }
-
-            .alert {
-                border-radius: 0;
-                border: none;
-                font-size: 0.9rem;
+                color: var(--text-color);
+                background-color: var(--surface-color);
             }
 
             .content {
-                padding: 3rem 0;
+                padding: 2rem 0 3rem;
+            }
+
+            .alert {
+                border-radius: var(--radius);
+                border: 1px solid var(--border-color);
+                font-size: 0.9rem;
+                margin-top: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                margin-bottom: 0.35rem;
+            }
+
+            .page-subtitle {
+                color: var(--muted-color);
+                margin-bottom: 1.25rem;
+            }
+
+            .section-block {
+                background-color: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 1rem 1.1rem;
+            }
+
+            .content-narrow {
+                max-width: 900px;
+            }
+
+            .section-heading {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+            }
+
+            .detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 0.6rem;
+            }
+
+            .detail-item {
+                background-color: var(--surface-color-2);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 0.65rem 0.75rem;
+            }
+
+            .detail-label {
+                color: var(--muted-color);
+                font-size: 0.82rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+
+            .detail-value {
+                font-size: 1rem;
+                margin-top: 0.25rem;
+                font-weight: 600;
+            }
+
+            .toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                align-items: end;
+                margin-bottom: 0.9rem;
+            }
+
+            .toolbar label {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                font-size: 0.85rem;
+                color: var(--muted-color);
+                min-width: 170px;
+            }
+
+            .toolbar select,
+            .toolbar input,
+            .form-control,
+            .form-select {
+                background-color: var(--surface-color-2);
+                color: var(--text-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+            }
+
+            .toolbar select:focus,
+            .toolbar input:focus,
+            .form-control:focus,
+            .form-select:focus {
+                border-color: var(--accent-color);
+                box-shadow: none;
+            }
+
+            .app-table-wrap {
+                overflow-x: auto;
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+            }
+
+            .app-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 0;
+            }
+
+            .app-table th,
+            .app-table td {
+                border-bottom: 1px solid var(--border-color);
+                padding: 0.65rem 0.7rem;
+                text-align: left;
+                white-space: nowrap;
+            }
+
+            .app-table th {
+                background-color: var(--surface-color-2);
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+
+            .app-table tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .app-table tbody tr:hover {
+                background-color: #243142;
+            }
+
+            .btn-app {
+                background-color: var(--accent-color);
+                border: 1px solid var(--accent-color);
+                color: #f4f8ff;
+                border-radius: var(--radius);
+                font-weight: 600;
+                padding: 0.5rem 0.95rem;
+                display: inline-block;
+                cursor: pointer;
+            }
+
+            .btn-app:hover {
+                background-color: var(--accent-hover);
+                border-color: var(--accent-hover);
+                color: #f4f8ff;
+            }
+
+            .btn-outline-app {
+                background-color: transparent;
+                border: 1px solid var(--border-color);
+                color: var(--text-color);
+                border-radius: var(--radius);
+                padding: 0.5rem 0.95rem;
+                display: inline-block;
+                cursor: pointer;
+            }
+
+            .btn-outline-app:hover {
+                background-color: var(--surface-color-2);
+                border-color: var(--accent-color);
+                color: var(--text-color);
+            }
+
+            .button-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.55rem;
+            }
+
+            .status-pill {
+                display: inline-block;
+                background-color: var(--surface-color-2);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                color: var(--text-color);
+                padding: 0.35rem 0.65rem;
+                font-size: 0.86rem;
+            }
+
+            .pagination-row {
+                margin-top: 0.95rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+                align-items: center;
+            }
+
+            .pagination-row a {
+                display: inline-block;
+                background-color: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                color: var(--text-color);
+                padding: 0.3rem 0.7rem;
+            }
+
+            .pagination-row a:hover {
+                border-color: var(--accent-color);
+                color: var(--text-color);
+            }
+
+            .muted {
+                color: var(--muted-color);
+            }
+
+            .error-code {
+                font-size: 2.2rem;
+                font-weight: 700;
+                color: var(--danger-color);
+                margin-bottom: 0.35rem;
+            }
+
+            .error-shell {
+                max-width: 680px;
+            }
+
+            .error-title {
+                font-size: 1.45rem;
+            }
+
+            .action-list {
+                list-style: none;
+                padding-left: 0;
+                margin: 0;
+                display: grid;
+                gap: 0.6rem;
+            }
+
+            .action-list a {
+                display: block;
+                padding: 0.75rem 0.9rem;
+                border-radius: var(--radius);
+                border: 1px solid var(--border-color);
+                background-color: var(--surface-color);
+                color: var(--text-color);
+                font-weight: 600;
+            }
+
+            .action-list a:hover {
+                border-color: var(--accent-color);
+                background-color: var(--surface-color-2);
             }
         </style>
 

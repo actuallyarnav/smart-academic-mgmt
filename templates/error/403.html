@@ -1,5 +1,10 @@
-{% extends "base.html" %} {% block title %}Page Not Found{% endblock %} {% block
-body %}
-<h1>403 - Forbidden</h1>
-<p>You shall not pass.</p>
-<p><a href="{{ url_for('login') }}">Back to login</a> {% endblock %}</p>
+{% extends "base.html" %} {% block head %}
+<title>403 - Forbidden</title>
+{% endblock %} {% block body %}
+<div class="section-block error-shell">
+    <div class="error-code">403</div>
+    <h1 class="page-title error-title">Forbidden</h1>
+    <p class="muted">Your account does not have permission to access this page.</p>
+    <a class="btn-app" href="{{ url_for('login') }}">Back to login</a>
+</div>
+{% endblock %}

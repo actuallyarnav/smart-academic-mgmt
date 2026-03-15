@@ -76,26 +76,3 @@ CREATE TABLE marks (
     last_updated_by INT NOT NULL REFERENCES teachers(id),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
-
--- Attendance sessions table
-CREATE TABLE attendancesessions (
-    id SERIAL PRIMARY KEY,
-    subject_id INT NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
-    teacher_id INT NOT NULL REFERENCES teachers(id),
-    session_date DATE NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT now(),
-    content TEXT,
-    UNIQUE (subject_id, session_date)
-);
-
--- Attendance records table
-CREATE TABLE attendancerecords (
-    id SERIAL PRIMARY KEY,
-    attendance_session_id INT NOT NULL
-        REFERENCES attendancesessions(id) ON DELETE CASCADE,
-    enrollment_id INT NOT NULL
-        REFERENCES enrollments(id) ON DELETE CASCADE,
-    status BOOLEAN NOT NULL,
-    marked_at TIMESTAMPTZ DEFAULT now(),
-    UNIQUE (attendance_session_id, enrollment_id)
-);

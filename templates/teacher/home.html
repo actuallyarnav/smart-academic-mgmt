@@ -1,117 +1,113 @@
 {% extends "base.html" %} {% block head %}
 <title>Teacher Home</title>
-<style>
-    .toolbar {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-        margin: 1.25rem 0 0.75rem;
-    }
-
-    .toolbar label {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    .student-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 0.75rem;
-    }
-
-    .student-table th,
-    .student-table td {
-        border: 1px solid #343a40;
-        padding: 0.6rem 0.7rem;
-        text-align: left;
-    }
-
-    .student-table th {
-        background: #2b3035;
-    }
-
-    .pagination {
-        margin-top: 1rem;
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-    }
-</style>
 {%endblock%} {% block body %}
-<h1>Welcome, {{ teacher.name }}</h1>
-<h2>Department: {{ teacher.department }}</h2>
-<h2>Designation: {{ teacher.designation }}</h2>
+<h1 class="page-title">Teacher Dashboard</h1>
+<p class="page-subtitle">Welcome, {{ teacher.name }}.</p>
 
-<form method="get" class="toolbar">
-    <label>
-        Class
-        <select name="class_id" onchange="this.form.submit()">
-            <option value="" {{ "selected" if selected_class is none else "" }}>
-                All Classes
-            </option>
-            {% for c in classes %}
-            <option
-                value="{{ c.id }}"
-                {{ "selected" if selected_class == c.id else "" }}>
-                {{ c.year_label }} - {{ c.department }} - Sem {{ c.semester }}
-            </option>
-            {% endfor %}
-        </select>
-    </label>
+<div class="section-block mb-3">
+    <h2 class="section-heading">Profile</h2>
+    <div class="detail-grid">
+        <div class="detail-item">
+            <div class="detail-label">Department</div>
+            <div class="detail-value">{{ teacher.department }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Designation</div>
+            <div class="detail-value">{{ teacher.designation }}</div>
+        </div>
+    </div>
+</div>
 
-    <label>
-        Sort
-        <select name="sort_by" onchange="this.form.submit()">
-            <option value="roll" {{ "selected" if sort_by == "roll" else "" }}>Roll Number</option>
-            <option value="name" {{ "selected" if sort_by == "name" else "" }}>Name</option>
-            <option value="class" {{ "selected" if sort_by == "class" else "" }}>Class</option>
-        </select>
-    </label>
+<div class="section-block">
+    <h2 class="section-heading">Students You Teach</h2>
 
-    <label>
-        Order
-        <select name="order" onchange="this.form.submit()">
-            <option value="asc" {{ "selected" if order == "asc" else "" }}>Ascending</option>
-            <option value="desc" {{ "selected" if order == "desc" else "" }}>Descending</option>
-        </select>
-    </label>
-</form>
+    <form method="get" class="toolbar">
+        <label>
+            Class
+            <select name="class_id" onchange="this.form.submit()">
+                <option value="" {{ "selected" if selected_class is none else "" }}>
+                    All Classes
+                </option>
+                {% for c in classes %}
+                <option
+                    value="{{ c.id }}"
+                    {{ "selected" if selected_class == c.id else "" }}>
+                    {{ c.year_label }} - {{ c.department }} - Sem {{ c.semester }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
 
-<table class="student-table">
-    <thead>
-        <tr>
-            <th>Roll Number</th>
-            <th>Name</th>
-            <th>Class</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for s in students %}
-        <tr>
-            <td>{{ s.roll_number }}</td>
-            <td>{{ s.student_name }}</td>
-            <td>{{ s.year_label }} - {{ s.department }} - Sem {{ s.semester }}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="3">No students found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <label>
+            Sort
+            <select name="sort_by" onchange="this.form.submit()">
+                <option value="roll" {{ "selected" if sort_by == "roll" else "" }}>
+                    Roll Number
+                </option>
+                <option value="name" {{ "selected" if sort_by == "name" else "" }}>
+                    Name
+                </option>
+                <option value="class" {{ "selected" if sort_by == "class" else "" }}>
+                    Class
+                </option>
+            </select>
+        </label>
 
-<div class="pagination">
-    {% if page > 1 %}
-    <a href="?page={{ page-1 }}&class_id={{ selected_class if selected_class is not none else '' }}&sort_by={{ sort_by }}&order={{ order }}">Previous</a>
-    {% endif %}
+        <label>
+            Order
+            <select name="order" onchange="this.form.submit()">
+                <option value="asc" {{ "selected" if order == "asc" else "" }}>
+                    Ascending
+                </option>
+                <option value="desc" {{ "selected" if order == "desc" else "" }}>
+                    Descending
+                </option>
+            </select>
+        </label>
+    </form>
 
-    <span>Page {{ page }} of {{ total_pages }}</span>
+    <div class="app-table-wrap">
+        <table class="app-table">
+            <thead>
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.roll_number }}</td>
+                    <td>{{ s.student_name }}</td>
+                    <td>{{ s.year_label }} - {{ s.department }} - Sem {{ s.semester }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">No students found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    {% if page < total_pages %}
-    <a href="?page={{ page+1 }}&class_id={{ selected_class if selected_class is not none else '' }}&sort_by={{ sort_by }}&order={{ order }}">Next</a>
-    {% endif %}
+    <div class="pagination-row">
+        {% if page > 1 %}
+        <a
+            href="?page={{ page-1 }}&class_id={{ selected_class if selected_class is not none else '' }}&sort_by={{ sort_by }}&order={{ order }}"
+            >Previous</a
+        >
+        {% endif %}
+
+        <span class="muted">Page {{ page }} of {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a
+            href="?page={{ page+1 }}&class_id={{ selected_class if selected_class is not none else '' }}&sort_by={{ sort_by }}&order={{ order }}"
+            >Next</a
+        >
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}

@@ -1,16 +1,34 @@
 {% extends "base.html" %} {% block head %}
 <title>Student Home</title>
 {%endblock%} {% block body %}
-<h1>Welcome, Student</h1>
-<h2>Name: {{ student.name}}</h2>
-<h2>Roll No: {{ student.roll_number }}</h2>
-<h2>Department: {{ student.department }}</h2>
+<h1 class="page-title">Student Dashboard</h1>
+<p class="page-subtitle">Welcome, {{ student.name }}.</p>
 
-<div class="options">
-    <a href="/student/attendance" class="button">View Attendance</a>
-    <br />
-    <a href="/student/marks" class="button">View Marks</a> <br />
-    <a href="/student/performance" class="button">View Performance</a>
-    <br />
+<div class="section-block mb-3">
+    <h2 class="section-heading">Profile</h2>
+    <div class="detail-grid">
+        <div class="detail-item">
+            <div class="detail-label">Roll Number</div>
+            <div class="detail-value">{{ student.roll_number }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Department</div>
+            <div class="detail-value">{{ student.department }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Academic Year</div>
+            <div class="detail-value">{{ student.year_label }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Semester</div>
+            <div class="detail-value">{{ student.semester }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="button-group">
+    <a href="/student/attendance" class="btn-outline-app">View Attendance</a>
+    <a href="/student/marks" class="btn-app">View Marks</a>
+    <a href="/student/performance" class="btn-outline-app">View Performance</a>
 </div>
 {% endblock %}
