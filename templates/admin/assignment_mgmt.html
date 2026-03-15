@@ -1,0 +1,86 @@
+{% extends "base.html" %} {% block head %}
+<title>Teacher Assignment Management</title>
+{% endblock %} {% block body %}
+<h1 class="page-title">Teacher-Subject Assignments</h1>
+<p class="page-subtitle">Assign one or more teachers to the subjects they teach.</p>
+
+<div class="split-layout">
+    <div class="section-block">
+        <h2 class="section-heading">Current Assignments</h2>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Email</th>
+                        <th>Subject Code</th>
+                        <th>Subject</th>
+                        <th>Class</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in assignments %}
+                    <tr>
+                        <td>{{ row.teacher_name }}</td>
+                        <td>{{ row.email }}</td>
+                        <td>{{ row.subject_code }}</td>
+                        <td>{{ row.subject_name }}</td>
+                        <td>{{ row.year_label }} / {{ row.department }} / Sem {{ row.semester }}</td>
+                        <td>
+                            <form method="post" class="inline-form">
+                                <input type="hidden" name="action" value="delete" />
+                                <input type="hidden" name="teacher_id" value="{{ row.teacher_id }}" />
+                                <input type="hidden" name="subject_id" value="{{ row.subject_id }}" />
+                                <button type="submit" class="danger-button">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No assignments found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <h2 class="section-heading">Assign Teacher</h2>
+        <form method="post" class="form-grid">
+            <input type="hidden" name="action" value="assign" />
+
+            <label class="form-grid-full">
+                Teacher
+                <select class="form-select" name="teacher_id" required>
+                    <option value="">Select teacher</option>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">
+                        {{ teacher.teacher_name }} ({{ teacher.email }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="form-grid-full">
+                Subject
+                <select class="form-select" name="subject_id" required>
+                    <option value="">Select subject</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">
+                        {{ subject.subject_code }} - {{ subject.name }} / {{ subject.year_label }} / Sem {{ subject.semester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <div class="button-group form-grid-full">
+                <button type="submit" class="btn-app">Create Assignment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

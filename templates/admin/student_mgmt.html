@@ -2,82 +2,186 @@
 <title>Manage Students</title>
 {% endblock %} {% block body %}
 <h1 class="page-title">Student Management</h1>
-<p class="page-subtitle">Review and sort student records.</p>
+<p class="page-subtitle">Link student users to classes and maintain roll records.</p>
 
-<div class="section-block">
-    <form method="get" class="toolbar">
-        <label>
-            Sort By
-            <select name="sort_by" onchange="this.form.submit()">
-                <option value="semester" {{ 'selected' if sort_by == 'semester' }}>
-                    Semester
-                </option>
-                <option value="name" {{ 'selected' if sort_by == 'name' }}>
-                    Name
-                </option>
-                <option value="roll" {{ 'selected' if sort_by == 'roll' }}>
-                    Roll Number
-                </option>
-            </select>
-        </label>
+<div class="split-layout">
+    <div class="section-block">
+        <form method="get" class="toolbar">
+            <label>
+                Sort By
+                <select name="sort_by" onchange="this.form.submit()">
+                    <option value="semester" {{ 'selected' if sort_by == 'semester' }}>
+                        Semester
+                    </option>
+                    <option value="name" {{ 'selected' if sort_by == 'name' }}>
+                        Name
+                    </option>
+                    <option value="roll" {{ 'selected' if sort_by == 'roll' }}>
+                        Roll Number
+                    </option>
+                </select>
+            </label>
 
-        <label>
-            Order
-            <select name="order" onchange="this.form.submit()">
-                <option value="asc" {{ 'selected' if order == 'asc' }}>
-                    Ascending
-                </option>
-                <option value="desc" {{ 'selected' if order == 'desc' }}>
-                    Descending
-                </option>
-            </select>
-        </label>
-    </form>
+            <label>
+                Order
+                <select name="order" onchange="this.form.submit()">
+                    <option value="asc" {{ 'selected' if order == 'asc' }}>
+                        Ascending
+                    </option>
+                    <option value="desc" {{ 'selected' if order == 'desc' }}>
+                        Descending
+                    </option>
+                </select>
+            </label>
+        </form>
 
-    <div class="app-table-wrap">
-        <table class="app-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Roll No</th>
-                    <th>Year</th>
-                    <th>Semester</th>
-                    <th>Department</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in students %}
-                <tr>
-                    <td>{{ s.id }}</td>
-                    <td>{{ s.student_name }}</td>
-                    <td>{{ s.roll_number }}</td>
-                    <td>{{ s.year_label }}</td>
-                    <td>{{ s.semester }}</td>
-                    <td>{{ s.department }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="6">No students found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Roll No</th>
+                        <th>Class</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ s.id }}</td>
+                        <td>{{ s.student_name }}</td>
+                        <td>{{ s.email }}</td>
+                        <td>{{ s.roll_number }}</td>
+                        <td>{{ s.year_label }} / {{ s.department }} / Sem {{ s.semester }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a
+                                    class="btn-outline-app"
+                                    href="{{ url_for('admin.admin_student_mgmt', edit_id=s.id, page=page, sort_by=sort_by, order=order) }}"
+                                    >Edit</a
+                                >
+                                <form method="post" class="inline-form">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="student_id" value="{{ s.id }}" />
+                                    <button
+                                        type="submit"
+                                        class="danger-button"
+                                        onclick="return confirm('Delete this student record?')"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No students found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-row">
+            {% if page > 1 %}
+            <a href="?page={{ page-1 }}&sort_by={{ sort_by }}&order={{ order }}"
+                >Previous</a
+            >
+            {% endif %}
+
+            <span class="muted">Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+            <a href="?page={{ page+1 }}&sort_by={{ sort_by }}&order={{ order }}"
+                >Next</a
+            >
+            {% endif %}
+        </div>
     </div>
 
-    <div class="pagination-row">
-        {% if page > 1 %}
-        <a href="?page={{ page-1 }}&sort_by={{ sort_by }}&order={{ order }}"
-            >Previous</a
-        >
-        {% endif %}
+    <div class="section-block">
+        <h2 class="section-heading">
+            {{ "Edit Student" if edit_student else "Add Student" }}
+        </h2>
+        <form method="post" class="form-grid">
+            <input type="hidden" name="action" value="save" />
+            <input
+                type="hidden"
+                name="student_id"
+                value="{{ edit_student.id if edit_student else '' }}"
+            />
 
-        <span class="muted">Page {{ page }} of {{ total_pages }}</span>
+            <label class="form-grid-full">
+                Linked User
+                <select class="form-select" name="user_id" required>
+                    <option value="">Select student user</option>
+                    {% for user in student_users %}
+                    <option
+                        value="{{ user.id }}"
+                        {{ "selected" if edit_student and edit_student.user_id == user.id else "" }}
+                    >
+                        {{ user.email }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
 
-        {% if page < total_pages %}
-        <a href="?page={{ page+1 }}&sort_by={{ sort_by }}&order={{ order }}"
-            >Next</a
-        >
+            <label>
+                Student Name
+                <input
+                    class="form-control"
+                    type="text"
+                    name="student_name"
+                    value="{{ edit_student.student_name if edit_student else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Roll Number
+                <input
+                    class="form-control"
+                    type="number"
+                    name="roll_number"
+                    min="1"
+                    value="{{ edit_student.roll_number if edit_student else '' }}"
+                    required
+                />
+            </label>
+
+            <label class="form-grid-full">
+                Class
+                <select class="form-select" name="class_id" required>
+                    <option value="">Select class</option>
+                    {% for class_row in classes %}
+                    <option
+                        value="{{ class_row.id }}"
+                        {{ "selected" if edit_student and edit_student.class_id == class_row.id else "" }}
+                    >
+                        {{ class_row.year_label }} / {{ class_row.department }} / Sem {{ class_row.semester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <div class="button-group form-grid-full">
+                <button type="submit" class="btn-app">
+                    {{ "Update Student" if edit_student else "Create Student" }}
+                </button>
+                {% if edit_student %}
+                <a class="btn-outline-app" href="{{ url_for('admin.admin_student_mgmt') }}"
+                    >Clear</a
+                >
+                {% endif %}
+            </div>
+        </form>
+        {% if not student_users and not edit_student %}
+        <p class="empty-state mt-3">
+            Create a user with the student role first, then link it here.
+        </p>
         {% endif %}
     </div>
 </div>

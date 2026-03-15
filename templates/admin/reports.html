@@ -1,0 +1,57 @@
+{% extends "base.html" %} {% block head %}
+<title>Reports</title>
+{% endblock %} {% block body %}
+<h1 class="page-title">Reports</h1>
+<p class="page-subtitle">Structured views over academic records stored in the system.</p>
+
+<div class="section-block mb-3">
+    <form method="get" class="toolbar">
+        <label>
+            Report
+            <select name="report" onchange="this.form.submit()">
+                <option value="students" {{ "selected" if report.key == "students" else "" }}>
+                    Student List
+                </option>
+                <option value="enrollments" {{ "selected" if report.key == "enrollments" else "" }}>
+                    Subject Enrollments
+                </option>
+                <option value="marks" {{ "selected" if report.key == "marks" else "" }}>
+                    Marks Report
+                </option>
+                <option value="assignments" {{ "selected" if report.key == "assignments" else "" }}>
+                    Teacher Assignments
+                </option>
+            </select>
+        </label>
+    </form>
+</div>
+
+<div class="section-block">
+    <h2 class="section-heading">{{ report.title }}</h2>
+    <p class="page-subtitle mb-3">{{ report.description }}</p>
+    <div class="app-table-wrap">
+        <table class="app-table">
+            <thead>
+                <tr>
+                    {% for key, label in report.columns %}
+                    <th>{{ label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report.rows %}
+                <tr>
+                    {% for key, label in report.columns %}
+                    <td>{{ row[key] }}</td>
+                    {% endfor %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="{{ report.columns|length }}">No records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

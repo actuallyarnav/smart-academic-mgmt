@@ -4,7 +4,133 @@
 <h1 class="page-title">Subject Management</h1>
 <p class="page-subtitle">Create and maintain subjects for each class.</p>
 
-<div class="section-block">
-    <p class="mb-0 muted">This module is under construction.</p>
+<div class="split-layout">
+    <div class="section-block">
+        <h2 class="section-heading">Subjects</h2>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Credits</th>
+                        <th>Class</th>
+                        <th>Teachers</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.subject_code }}</td>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.credits }}</td>
+                        <td>{{ subject.year_label }} / {{ subject.department }} / Sem {{ subject.semester }}</td>
+                        <td>{{ subject.teacher_count }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a
+                                    class="btn-outline-app"
+                                    href="{{ url_for('admin.admin_subject_mgmt', edit_id=subject.id) }}"
+                                    >Edit</a
+                                >
+                                <form method="post" class="inline-form">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="subject_id" value="{{ subject.id }}" />
+                                    <button
+                                        type="submit"
+                                        class="danger-button"
+                                        onclick="return confirm('Delete this subject and dependent marks/enrollments?')"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No subjects found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <h2 class="section-heading">
+            {{ "Edit Subject" if edit_subject else "Add Subject" }}
+        </h2>
+        <form method="post" class="form-grid">
+            <input type="hidden" name="action" value="save" />
+            <input
+                type="hidden"
+                name="subject_id"
+                value="{{ edit_subject.id if edit_subject else '' }}"
+            />
+
+            <label>
+                Subject Code
+                <input
+                    class="form-control"
+                    type="text"
+                    name="subject_code"
+                    maxlength="7"
+                    value="{{ edit_subject.subject_code if edit_subject else '' }}"
+                    required
+                />
+            </label>
+
+            <label class="form-grid-full">
+                Subject Name
+                <input
+                    class="form-control"
+                    type="text"
+                    name="name"
+                    value="{{ edit_subject.name if edit_subject else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Credits
+                <input
+                    class="form-control"
+                    type="number"
+                    name="credits"
+                    min="1"
+                    value="{{ edit_subject.credits if edit_subject else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Class
+                <select class="form-select" name="class_id" required>
+                    <option value="">Select class</option>
+                    {% for class_row in classes %}
+                    <option
+                        value="{{ class_row.id }}"
+                        {{ "selected" if edit_subject and edit_subject.class_id == class_row.id else "" }}
+                    >
+                        {{ class_row.year_label }} / {{ class_row.department }} / Sem {{ class_row.semester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <div class="button-group form-grid-full">
+                <button type="submit" class="btn-app">
+                    {{ "Update Subject" if edit_subject else "Create Subject" }}
+                </button>
+                {% if edit_subject %}
+                <a class="btn-outline-app" href="{{ url_for('admin.admin_subject_mgmt') }}"
+                    >Clear</a
+                >
+                {% endif %}
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

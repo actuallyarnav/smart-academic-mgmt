@@ -4,7 +4,138 @@
 <h1 class="page-title">Teacher Management</h1>
 <p class="page-subtitle">Manage teacher records and allocations.</p>
 
-<div class="section-block">
-    <p class="mb-0 muted">This module is under construction.</p>
+<div class="split-layout">
+    <div class="section-block">
+        <h2 class="section-heading">Teacher Records</h2>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Subjects</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.id }}</td>
+                        <td>{{ teacher.teacher_name }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>{{ teacher.department }}</td>
+                        <td>{{ teacher.designation }}</td>
+                        <td>{{ teacher.subject_count }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a
+                                    class="btn-outline-app"
+                                    href="{{ url_for('admin.admin_teacher_mgmt', edit_id=teacher.id) }}"
+                                    >Edit</a
+                                >
+                                <form method="post" class="inline-form">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="teacher_id" value="{{ teacher.id }}" />
+                                    <button
+                                        type="submit"
+                                        class="danger-button"
+                                        onclick="return confirm('Delete this teacher record?')"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No teachers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <h2 class="section-heading">
+            {{ "Edit Teacher" if edit_teacher else "Add Teacher" }}
+        </h2>
+        <form method="post" class="form-grid">
+            <input type="hidden" name="action" value="save" />
+            <input
+                type="hidden"
+                name="teacher_id"
+                value="{{ edit_teacher.id if edit_teacher else '' }}"
+            />
+
+            <label class="form-grid-full">
+                Linked User
+                <select class="form-select" name="user_id" required>
+                    <option value="">Select teacher user</option>
+                    {% for user in teacher_users %}
+                    <option
+                        value="{{ user.id }}"
+                        {{ "selected" if edit_teacher and edit_teacher.user_id == user.id else "" }}
+                    >
+                        {{ user.email }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                Teacher Name
+                <input
+                    class="form-control"
+                    type="text"
+                    name="teacher_name"
+                    value="{{ edit_teacher.teacher_name if edit_teacher else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Department
+                <input
+                    class="form-control"
+                    type="text"
+                    name="department"
+                    value="{{ edit_teacher.department if edit_teacher else '' }}"
+                    required
+                />
+            </label>
+
+            <label class="form-grid-full">
+                Designation
+                <input
+                    class="form-control"
+                    type="text"
+                    name="designation"
+                    value="{{ edit_teacher.designation if edit_teacher else '' }}"
+                    required
+                />
+            </label>
+
+            <div class="button-group form-grid-full">
+                <button type="submit" class="btn-app">
+                    {{ "Update Teacher" if edit_teacher else "Create Teacher" }}
+                </button>
+                {% if edit_teacher %}
+                <a class="btn-outline-app" href="{{ url_for('admin.admin_teacher_mgmt') }}"
+                    >Clear</a
+                >
+                {% endif %}
+            </div>
+        </form>
+        {% if not teacher_users and not edit_teacher %}
+        <p class="empty-state mt-3">
+            Create a user with the teacher role first, then link it here.
+        </p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

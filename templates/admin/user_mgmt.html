@@ -1,0 +1,116 @@
+{% extends "base.html" %} {% block head %}
+<title>User Management</title>
+{% endblock %} {% block body %}
+<h1 class="page-title">User Management</h1>
+<p class="page-subtitle">Create, update, and remove login accounts for all roles.</p>
+
+<div class="split-layout">
+    <div class="section-block">
+        <h2 class="section-heading">Existing Accounts</h2>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Linked Record</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role|capitalize }}</td>
+                        <td>{{ user.student_name or user.teacher_name or "Admin only" }}</td>
+                        <td>{{ user.created_at }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a
+                                    class="btn-outline-app"
+                                    href="{{ url_for('admin.admin_user_mgmt', edit_id=user.id) }}"
+                                    >Edit</a
+                                >
+                                <form method="post" class="inline-form">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="user_id" value="{{ user.id }}" />
+                                    <button
+                                        type="submit"
+                                        class="danger-button"
+                                        onclick="return confirm('Delete this user account?')"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No user accounts found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <h2 class="section-heading">
+            {{ "Edit Account" if edit_user else "Create Account" }}
+        </h2>
+        <form method="post" class="form-grid">
+            <input type="hidden" name="action" value="save" />
+            <input
+                type="hidden"
+                name="user_id"
+                value="{{ edit_user.id if edit_user else '' }}"
+            />
+
+            <label>
+                Email
+                <input
+                    class="form-control"
+                    type="email"
+                    name="email"
+                    value="{{ edit_user.email if edit_user else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Role
+                <select class="form-select" name="role" required>
+                    {% for role in ["student", "teacher", "admin"] %}
+                    <option
+                        value="{{ role }}"
+                        {{ "selected" if edit_user and edit_user.role == role else "" }}
+                    >
+                        {{ role|capitalize }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="form-grid-full">
+                Password {{ "(leave blank to keep current password)" if edit_user else "" }}
+                <input class="form-control" type="password" name="password" />
+            </label>
+
+            <div class="button-group form-grid-full">
+                <button type="submit" class="btn-app">
+                    {{ "Update User" if edit_user else "Create User" }}
+                </button>
+                {% if edit_user %}
+                <a class="btn-outline-app" href="{{ url_for('admin.admin_user_mgmt') }}"
+                    >Clear</a
+                >
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

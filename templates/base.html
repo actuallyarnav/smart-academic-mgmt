@@ -242,6 +242,68 @@
                 gap: 0.55rem;
             }
 
+            .split-layout {
+                display: grid;
+                grid-template-columns: 1.1fr 0.9fr;
+                gap: 1rem;
+                align-items: start;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .form-grid-full {
+                grid-column: 1 / -1;
+            }
+
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .stat-card {
+                background-color: var(--surface-color-2);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 0.85rem;
+            }
+
+            .stat-card .detail-label {
+                margin-bottom: 0.25rem;
+            }
+
+            .inline-form {
+                display: inline;
+            }
+
+            .danger-button {
+                background-color: transparent;
+                border: 1px solid var(--danger-color);
+                color: #f0c9cf;
+                border-radius: var(--radius);
+                padding: 0.4rem 0.75rem;
+            }
+
+            .danger-button:hover {
+                background-color: rgba(209, 106, 120, 0.12);
+                color: #ffe6ea;
+            }
+
+            .table-actions {
+                display: flex;
+                gap: 0.45rem;
+                flex-wrap: wrap;
+            }
+
+            .empty-state {
+                color: var(--muted-color);
+                margin: 0;
+            }
+
             .status-pill {
                 display: inline-block;
                 background-color: var(--surface-color-2);
@@ -315,6 +377,12 @@
                 border-color: var(--accent-color);
                 background-color: var(--surface-color-2);
             }
+
+            @media (max-width: 900px) {
+                .split-layout {
+                    grid-template-columns: 1fr;
+                }
+            }
         </style>
 
         {% block head %}{% endblock %}
@@ -339,6 +407,9 @@
                 <div class="d-flex gap-3">
                     <a class="nav-link" href="/">Home</a>
                     <a class="nav-link" href="/about">About</a>
+                    {% if session.get("user_id") %}
+                    <a class="nav-link" href="/logout">Logout</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>

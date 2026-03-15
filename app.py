@@ -21,11 +21,9 @@ from routes.teacher import teacher_bp
 from services.database import valid_login
 
 # config n stuff
-# i probably dont need to make a config.py seeing as its just 3 lines
-# for now at least
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # blueprint register
 app.register_blueprint(student_bp)
@@ -55,17 +53,19 @@ def unauthorized(e):
 def login():
     role = request.args.get("role")
     if request.method == "POST":
-        email = request.form["email"].strip()
+        email = request.form["email"].strip().lower()
         password = request.form["password"]
         role = request.form["role"]
 
-        if not valid_login(role, email, password):
-            flash("Invalid email, password, or role")
+        user = valid_login(role, email, password)
+        if not user:
+            flash("Invalid email, password, or role", "danger")
             return redirect(url_for("login", role=role))
-        else:
-            session["user_id"] = email
-            session["role"] = role
-            return redirect(f"/{role}/home")
+
+        session["user_id"] = user["id"]
+        session["user_email"] = user["email"]
+        session["role"] = user["role"]
+        return redirect(f"/{role}/home")
 
     return render_template("login.html", role=role)
 
@@ -76,6 +76,17 @@ def about():
     return render_template("about.html")
 
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been signed out.", "success")
+    return redirect(url_for("login"))
+
+
 # main function, run dat code for me 5
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "8080")),
+        debug=os.getenv("FLASK_DEBUG", "0") == "1",
+    )

@@ -23,12 +23,23 @@
             <div class="detail-label">Semester</div>
             <div class="detail-value">{{ student.semester }}</div>
         </div>
+        <div class="detail-item">
+            <div class="detail-label">Admission Year</div>
+            <div class="detail-value">{{ student.admission_year }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Email</div>
+            <div class="detail-value">{{ student.email }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Enrollments</div>
+            <div class="detail-value">{{ enrollment_count }}</div>
+        </div>
     </div>
 </div>
 
 <div class="button-group">
-    <a href="/student/attendance" class="btn-outline-app">View Attendance</a>
+    <a href="/student/enrollments" class="btn-app">Manage Enrollments</a>
     <a href="/student/marks" class="btn-app">View Marks</a>
-    <a href="/student/performance" class="btn-outline-app">View Performance</a>
 </div>
 {% endblock %}

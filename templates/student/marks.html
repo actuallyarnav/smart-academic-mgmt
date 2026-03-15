@@ -2,7 +2,9 @@
 <title>Student Marks</title>
 {%endblock%} {% block body %}
 <h1 class="page-title">Marks</h1>
-<p class="page-subtitle">Subject-wise marks and grades.</p>
+<p class="page-subtitle">
+    Your subject enrollments, marks, and grading details.
+</p>
 
 <div class="section-block mb-3">
     <div
@@ -17,23 +19,32 @@
         <table class="app-table">
             <thead>
                 <tr>
+                    <th>Academic Year</th>
                     <th>Subject</th>
                     <th>Code</th>
+                    <th>Credits</th>
                     <th>Marks</th>
                     <th>Grade</th>
+                    <th>Updated At</th>
                 </tr>
             </thead>
             <tbody>
-                {% for subject, data in marks.items() %}
+                {% for row in enrollments %}
                 <tr>
-                    <td>{{ subject }}</td>
-                    <td>{{ data.subject_code }}</td>
-                    <td>{{ data.marks }}</td>
-                    <td>{{ data.grade }}</td>
+                    <td>{{ row.academic_year }}</td>
+                    <td>{{ row.subject_name }}</td>
+                    <td>{{ row.subject_code }}</td>
+                    <td>{{ row.credits }}</td>
+                    <td>
+                        {{ row.marks_obtained if row.marks_obtained is not none
+                        else "Pending" }}
+                    </td>
+                    <td>{{ row.grade or "-" }}</td>
+                    <td>{{ row.updated_at or "-" }}</td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4">No marks found.</td>
+                    <td colspan="7">No enrollments or marks found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -41,7 +52,12 @@
     </div>
 </div>
 
-<a class="btn-outline-app" href="{{ url_for('student.student_home') }}"
-    >Back to student home</a
->
+<div class="button-group">
+    <a class="btn-outline-app" href="{{ url_for('student.student_home') }}"
+        >Back to student home</a
+    >
+    <a class="btn-app" href="{{ url_for('student.student_enrollments') }}"
+        >Manage Enrollments</a
+    >
+</div>
 {% endblock %}
