@@ -17,7 +17,7 @@ It provides role-based access to academic information and allows viewing and mod
 
 * View personal academic details
 * View enrolled subjects
-* View grades and related information (future scope)
+* View grades and related information
 
 ### Teacher
 
@@ -40,6 +40,7 @@ It provides role-based access to academic information and allows viewing and mod
 * Jinja2 templates (HTML)
 * Bootstrap (CSS)
 * PostgreSQL database
+* Docker
 
 ## Database Design
 
@@ -63,35 +64,96 @@ The system uses a relational database with the following core tables:
 
 ## Setup Instructions
 
-1. Clone the repository
-2. Create a PostgreSQL database called `student_db`
-3. Run the SQL commands provided in `create_tables.sql`, or just use `\i  database/create_tables.sql` to run the file itself
-4. Configure database credentials in the Flask app
-5. Install dependencies (preferably in a virtual environment, but you do you):
+Prerequisites: Python3, uv, PostgreSQL, git
+
+1. Clone the repository:
 
    ```
-    pip install -r requirements.txt
+   git clone --branch <branchname> https://github.com/actuallyarnav/smart-academic-mgmt
+   cd smart-academic-mgmt
    ```
-6. Or, use `uv` to create and run the environment:
+
+2. Create the `.env` file and place it in the root of the project:
+
+   ```
+   SECRET_KEY=super-secret-key
+   DB_NAME=db_name
+   DB_USER=user_name
+   DB_PASSWORD=db_pass
+   DB_HOST=host_name
+   DB_PORT=port
+   ```
+   Change the values to match the credentials of your psql database
+   `DB_PORT` is usually `5432`
+
+3. Set up the PostgreSQL database:
+
+   ```
+   CREATE DATABASE db_name
+   ```
+
+   ```
+   psql -d db_name -U postgres -f database/create_tables.sql
+   ```
+
+   The file path can change depending on where your database is located.
+
+4. Set up the admin account.
+
+   Now, you will need to bootstrap an admin account to actually log in to the system.
+
+   ```
+   uv run python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-admin-password'))"
+   ```
+
+   This command will give you a hash value, like so: `scrypt:32768:8:1$zHf5vC886y3Bu...`
+
+   Copy the entire result and run this SQL query in the PostgreSQL database that you just created:
+
+   ```
+   INSERT INTO users (email, role, password_hash)
+   VALUES ('admin@example.com', 'admin', '<your_hash_that_you_copied>');
+   ```
+
+5. Using Python (I recommend this for testing):
+
+   Set up the project dependencies:
 
    ```
    uv venv
    source .venv/bin/activate
    uv pip install -r requirements.txt
    ```
-7. Run the application:
+
+   Run the app:
 
    ```
-   python3 app.py
+   uv run app.py
    ```
-8. Open `localhost:8080` in a browser, and et voila!
+
+6. Using Docker (Recommended for actual prod):
+
+   Build the container:
+
+   ```
+   docker build -t student-mgmt-sys .
+   ```
+
+   Change the `DB_HOST` in the `.env` file to `host.docker.internal`.
+
+   This is required because the app is running inside the container, and `localhost` from inside Docker points to the container itself, not your host machine.
+
+   Run the container:
+
+   ```
+   docker run -p 8080:8080 --env-file .env student-mgmt-sys
+   ```
+
+7. Open `http://localhost:8080` in a browser, and et voila!
 
 ## Future Enhancements
-This is still a work-in-progress. 
-* Password hashing
+These are enhancements that could be added in a full-fledged system:
 * Attendance management
-* Grade management system
-* Docker-based deployment
 * Frontend improvements
 
 ### Developed as part of the Third-year B. Sc. (Computer Science) Final Semester project.
