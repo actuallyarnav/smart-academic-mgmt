@@ -2,7 +2,9 @@
 <title>Teacher Assignment Management</title>
 {% endblock %} {% block body %}
 <h1 class="page-title">Teacher-Subject Assignments</h1>
-<p class="page-subtitle">Assign one or more teachers to the subjects they teach.</p>
+<p class="page-subtitle">
+    Assign one or more teachers to the subjects they teach.
+</p>
 
 <div class="split-layout">
     <div class="section-block">
@@ -26,12 +28,27 @@
                         <td>{{ row.email }}</td>
                         <td>{{ row.subject_code }}</td>
                         <td>{{ row.subject_name }}</td>
-                        <td>{{ row.year_label }} / {{ row.department }} / Sem {{ row.semester }}</td>
+                        <td>
+                            {{ row.year_label }} / {{ row.department }} / Sem {{
+                            row.semester }}
+                        </td>
                         <td>
                             <form method="post" class="inline-form">
-                                <input type="hidden" name="action" value="delete" />
-                                <input type="hidden" name="teacher_id" value="{{ row.teacher_id }}" />
-                                <input type="hidden" name="subject_id" value="{{ row.subject_id }}" />
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="delete"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="teacher_id"
+                                    value="{{ row.teacher_id }}"
+                                />
+                                <input
+                                    type="hidden"
+                                    name="subject_id"
+                                    value="{{ row.subject_id }}"
+                                />
                                 <button type="submit" class="danger-button">
                                     Remove
                                 </button>
@@ -71,7 +88,8 @@
                     <option value="">Select subject</option>
                     {% for subject in subjects %}
                     <option value="{{ subject.id }}">
-                        {{ subject.subject_code }} - {{ subject.name }} / {{ subject.year_label }} / Sem {{ subject.semester }}
+                        {{ subject.subject_code }} - {{ subject.name }} / {{
+                        subject.year_label }} / Sem {{ subject.semester }}
                     </option>
                     {% endfor %}
                 </select>
@@ -82,5 +100,11 @@
             </div>
         </form>
     </div>
+</div>
+
+<div class="button-group mt-3">
+    <a class="btn-outline-app" href="{{ url_for('admin.admin_home') }}"
+        >Back to admin home</a
+    >
 </div>
 {% endblock %}

@@ -33,6 +33,10 @@
                 --accent-color: #4a8eff;
                 --accent-hover: #3e79d6;
                 --danger-color: #d16a78;
+                --link-color: #93b9ff;
+                --link-hover-color: #bfd5ff;
+                --row-hover-color: #243142;
+                --button-text-color: #f4f8ff;
                 --radius: 0.65rem;
             }
 
@@ -46,6 +50,10 @@
                 --accent-color: #1d63d9;
                 --accent-hover: #154fae;
                 --danger-color: #ba4b5e;
+                --link-color: #1b5ecb;
+                --link-hover-color: #13489c;
+                --row-hover-color: #e3ebf7;
+                --button-text-color: #ffffff;
                 --radius: 0.65rem;
             }
 
@@ -58,12 +66,12 @@
             }
 
             a {
-                color: #93b9ff;
+                color: var(--link-color);
                 text-decoration: none;
             }
 
             a:hover {
-                color: #bfd5ff;
+                color: var(--link-hover-color);
             }
 
             .mainbody {
@@ -81,6 +89,7 @@
             .navbar-brand {
                 font-weight: 700;
                 letter-spacing: 0.02em;
+                color: var(--text-color);
             }
 
             .nav-link {
@@ -95,11 +104,17 @@
             }
 
             .theme-toggle {
+                width: 2.5rem;
+                height: 2.5rem;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 background-color: transparent;
                 border: 1px solid var(--border-color);
-                color: var(--muted-color);
-                border-radius: var(--radius);
-                padding: 0.35rem 0.7rem;
+                color: var(--text-color);
+                border-radius: 999px;
+                padding: 0;
+                font-size: 1rem;
             }
 
             .theme-toggle:hover {
@@ -239,13 +254,13 @@
             }
 
             .app-table tbody tr:hover {
-                background-color: #243142;
+                background-color: var(--row-hover-color);
             }
 
             .btn-app {
                 background-color: var(--accent-color);
                 border: 1px solid var(--accent-color);
-                color: #f4f8ff;
+                color: var(--button-text-color);
                 border-radius: var(--radius);
                 font-weight: 600;
                 padding: 0.5rem 0.95rem;
@@ -256,7 +271,7 @@
             .btn-app:hover {
                 background-color: var(--accent-hover);
                 border-color: var(--accent-hover);
-                color: #f4f8ff;
+                color: var(--button-text-color);
             }
 
             .btn-outline-app {
@@ -439,23 +454,25 @@
             <div
                 class="mainbody d-flex justify-content-between align-items-center"
             >
-                <a class="navbar-brand text-white" href="/"
+                <a class="navbar-brand" href="/"
                     >Smart Academics Management System</a
                 >
 
                 <div class="d-flex gap-3">
-                    <button
-                        class="theme-toggle"
-                        id="theme-toggle"
-                        type="button"
-                    >
-                        Switch Theme
-                    </button>
                     <a class="nav-link" href="/">Home</a>
                     <a class="nav-link" href="/about">About</a>
                     {% if session.get("user_id") %}
                     <a class="nav-link" href="/logout">Logout</a>
                     {% endif %}
+                    <button
+                        class="theme-toggle"
+                        id="theme-toggle"
+                        type="button"
+                        aria-label="Toggle color theme"
+                        title="Toggle color theme"
+                    >
+                        ☀
+                    </button>
                 </div>
             </div>
         </nav>
@@ -471,8 +488,7 @@
                     root.setAttribute("data-bs-theme", theme);
                     localStorage.setItem(storageKey, theme);
                     if (toggle) {
-                        toggle.textContent =
-                            theme === "dark" ? "Light Mode" : "Dark Mode";
+                        toggle.textContent = theme === "dark" ? "☀" : "☾";
                     }
                 }
 
