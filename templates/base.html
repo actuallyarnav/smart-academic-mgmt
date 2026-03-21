@@ -4,6 +4,18 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+        <script>
+            (function () {
+                const savedTheme = localStorage.getItem("sams-theme");
+                if (savedTheme) {
+                    document.documentElement.setAttribute(
+                        "data-bs-theme",
+                        savedTheme,
+                    );
+                }
+            })();
+        </script>
+
         <link
             href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
             rel="stylesheet"
@@ -11,7 +23,7 @@
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
         <style>
-            :root {
+            html[data-bs-theme="dark"] {
                 --background-color: #10161f;
                 --surface-color: #18212d;
                 --surface-color-2: #202c3b;
@@ -21,6 +33,19 @@
                 --accent-color: #4a8eff;
                 --accent-hover: #3e79d6;
                 --danger-color: #d16a78;
+                --radius: 0.65rem;
+            }
+
+            html[data-bs-theme="light"] {
+                --background-color: #f4f7fb;
+                --surface-color: #ffffff;
+                --surface-color-2: #edf3fb;
+                --border-color: #c9d6e6;
+                --text-color: #162030;
+                --muted-color: #5c6b7d;
+                --accent-color: #1d63d9;
+                --accent-hover: #154fae;
+                --danger-color: #ba4b5e;
                 --radius: 0.65rem;
             }
 
@@ -67,6 +92,20 @@
             .nav-link:hover {
                 color: var(--text-color);
                 background-color: var(--surface-color);
+            }
+
+            .theme-toggle {
+                background-color: transparent;
+                border: 1px solid var(--border-color);
+                color: var(--muted-color);
+                border-radius: var(--radius);
+                padding: 0.35rem 0.7rem;
+            }
+
+            .theme-toggle:hover {
+                color: var(--text-color);
+                background-color: var(--surface-color);
+                border-color: var(--accent-color);
             }
 
             .content {
@@ -405,6 +444,13 @@
                 >
 
                 <div class="d-flex gap-3">
+                    <button
+                        class="theme-toggle"
+                        id="theme-toggle"
+                        type="button"
+                    >
+                        Switch Theme
+                    </button>
                     <a class="nav-link" href="/">Home</a>
                     <a class="nav-link" href="/about">About</a>
                     {% if session.get("user_id") %}
@@ -415,5 +461,37 @@
         </nav>
 
         <main class="mainbody content">{% block body %}{% endblock %}</main>
+        <script>
+            (function () {
+                const storageKey = "sams-theme";
+                const toggle = document.getElementById("theme-toggle");
+                const root = document.documentElement;
+
+                function applyTheme(theme) {
+                    root.setAttribute("data-bs-theme", theme);
+                    localStorage.setItem(storageKey, theme);
+                    if (toggle) {
+                        toggle.textContent =
+                            theme === "dark" ? "Light Mode" : "Dark Mode";
+                    }
+                }
+
+                const activeTheme =
+                    localStorage.getItem(storageKey) ||
+                    root.getAttribute("data-bs-theme") ||
+                    "dark";
+                applyTheme(activeTheme);
+
+                if (toggle) {
+                    toggle.addEventListener("click", function () {
+                        applyTheme(
+                            root.getAttribute("data-bs-theme") === "dark"
+                                ? "light"
+                                : "dark",
+                        );
+                    });
+                }
+            })();
+        </script>
     </body>
 </html>

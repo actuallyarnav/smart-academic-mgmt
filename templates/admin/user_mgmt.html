@@ -1,19 +1,21 @@
 {% extends "base.html" %} {% block head %}
-<title>User Management</title>
+<title>Admin Account Management</title>
 {% endblock %} {% block body %}
-<h1 class="page-title">User Management</h1>
-<p class="page-subtitle">Create, update, and remove login accounts for all roles.</p>
+<h1 class="page-title">Admin Accounts</h1>
+<p class="page-subtitle">
+    Manage administrator logins. Student and teacher accounts are created from
+    their own modules.
+</p>
 
 <div class="split-layout">
     <div class="section-block">
-        <h2 class="section-heading">Existing Accounts</h2>
+        <h2 class="section-heading">Administrator Accounts</h2>
         <div class="app-table-wrap">
             <table class="app-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Email</th>
-                        <th>Role</th>
                         <th>Linked Record</th>
                         <th>Created</th>
                         <th>Actions</th>
@@ -24,8 +26,10 @@
                     <tr>
                         <td>{{ user.id }}</td>
                         <td>{{ user.email }}</td>
-                        <td>{{ user.role|capitalize }}</td>
-                        <td>{{ user.student_name or user.teacher_name or "Admin only" }}</td>
+                        <td>
+                            {{ user.student_name or user.teacher_name or "Admin
+                            only" }}
+                        </td>
                         <td>{{ user.created_at }}</td>
                         <td>
                             <div class="table-actions">
@@ -35,12 +39,24 @@
                                     >Edit</a
                                 >
                                 <form method="post" class="inline-form">
-                                    <input type="hidden" name="action" value="delete" />
-                                    <input type="hidden" name="user_id" value="{{ user.id }}" />
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="delete"
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="user_id"
+                                        value="{{ user.id }}"
+                                    />
                                     <button
                                         type="submit"
                                         class="danger-button"
-                                        onclick="return confirm('Delete this user account?')"
+                                        onclick="
+                                            return confirm(
+                                                'Delete this user account?',
+                                            );
+                                        "
                                     >
                                         Delete
                                     </button>
@@ -50,7 +66,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6">No user accounts found.</td>
+                        <td colspan="5">No admin accounts found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -81,31 +97,21 @@
                 />
             </label>
 
-            <label>
-                Role
-                <select class="form-select" name="role" required>
-                    {% for role in ["student", "teacher", "admin"] %}
-                    <option
-                        value="{{ role }}"
-                        {{ "selected" if edit_user and edit_user.role == role else "" }}
-                    >
-                        {{ role|capitalize }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </label>
-
             <label class="form-grid-full">
-                Password {{ "(leave blank to keep current password)" if edit_user else "" }}
+                Password {{ "(leave blank to keep current password)" if
+                edit_user else "" }}
                 <input class="form-control" type="password" name="password" />
             </label>
 
             <div class="button-group form-grid-full">
                 <button type="submit" class="btn-app">
-                    {{ "Update User" if edit_user else "Create User" }}
+                    {{ "Update Admin Account" if edit_user else "Create Admin
+                    Account" }}
                 </button>
                 {% if edit_user %}
-                <a class="btn-outline-app" href="{{ url_for('admin.admin_user_mgmt') }}"
+                <a
+                    class="btn-outline-app"
+                    href="{{ url_for('admin.admin_user_mgmt') }}"
                     >Clear</a
                 >
                 {% endif %}

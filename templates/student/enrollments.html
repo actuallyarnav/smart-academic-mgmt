@@ -2,108 +2,74 @@
 <title>Student Enrollments</title>
 {% endblock %} {% block body %}
 <h1 class="page-title">Subject Enrollments</h1>
-<p class="page-subtitle">Enroll in subjects from your class and review existing selections.</p>
+<p class="page-subtitle">
+    Your current subject registrations. Enrollment changes are handled by
+    administrators.
+</p>
 
-<div class="split-layout">
-    <div class="section-block">
-        <h2 class="section-heading">Current Enrollments</h2>
-        <div class="app-table-wrap">
-            <table class="app-table">
-                <thead>
-                    <tr>
-                        <th>Academic Year</th>
-                        <th>Subject Code</th>
-                        <th>Subject</th>
-                        <th>Credits</th>
-                        <th>Marks</th>
-                        <th>Grade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in enrollments %}
-                    <tr>
-                        <td>{{ row.academic_year }}</td>
-                        <td>{{ row.subject_code }}</td>
-                        <td>{{ row.subject_name }}</td>
-                        <td>{{ row.credits }}</td>
-                        <td>{{ row.marks_obtained if row.marks_obtained is not none else "Pending" }}</td>
-                        <td>{{ row.grade or "-" }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6">No enrollments found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="section-block mb-3">
+    <div class="detail-grid">
+        <div class="detail-item">
+            <div class="detail-label">Student</div>
+            <div class="detail-value">{{ student.name }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Class</div>
+            <div class="detail-value">
+                {{ student.year_label }} / {{ student.department }} / Sem {{
+                student.semester }}
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Access</div>
+            <div class="detail-value">Read-only</div>
         </div>
     </div>
+</div>
 
-    <div class="section-block">
-        <h2 class="section-heading">New Enrollment</h2>
-        <div class="detail-grid mb-3">
-            <div class="detail-item">
-                <div class="detail-label">Student</div>
-                <div class="detail-value">{{ student.name }}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Class</div>
-                <div class="detail-value">
-                    {{ student.year_label }} / {{ student.department }} / Sem {{ student.semester }}
-                </div>
-            </div>
-        </div>
+<div class="section-block">
+    <h2 class="section-heading">Current Enrollments</h2>
+    <div class="app-table-wrap">
+        <table class="app-table">
+            <thead>
+                <tr>
+                    <th>Academic Year</th>
+                    <th>Subject Code</th>
+                    <th>Subject</th>
+                    <th>Credits</th>
+                    <th>Marks</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in enrollments %}
+                <tr>
+                    <td>{{ row.academic_year }}</td>
+                    <td>{{ row.subject_code }}</td>
+                    <td>{{ row.subject_name }}</td>
+                    <td>{{ row.credits }}</td>
+                    <td>
+                        {{ row.marks_obtained if row.marks_obtained is not none
+                        else "Pending" }}
+                    </td>
+                    <td>{{ row.grade or "-" }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No enrollments found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-        <form method="get" class="toolbar">
-            <label>
-                Academic Year
-                <input
-                    class="form-control"
-                    type="text"
-                    name="academic_year"
-                    value="{{ academic_year }}"
-                />
-            </label>
-            <button type="submit" class="btn-outline-app">Refresh Subjects</button>
-        </form>
-
-        <form method="post" class="form-grid">
-            <label class="form-grid-full">
-                Subject
-                <select class="form-select" name="subject_id" required>
-                    <option value="">Select subject</option>
-                    {% for subject in available_subjects %}
-                    <option value="{{ subject.id }}">
-                        {{ subject.subject_code }} - {{ subject.name }} ({{ subject.credits }} credits)
-                    </option>
-                    {% endfor %}
-                </select>
-            </label>
-
-            <label class="form-grid-full">
-                Academic Year
-                <input
-                    class="form-control"
-                    type="text"
-                    name="academic_year"
-                    value="{{ academic_year }}"
-                    required
-                />
-            </label>
-
-            <div class="button-group form-grid-full">
-                <button type="submit" class="btn-app">Enroll Subject</button>
-                <a class="btn-outline-app" href="{{ url_for('student.student_marks') }}"
-                    >View Marks</a
-                >
-            </div>
-        </form>
-
-        {% if not available_subjects %}
-        <p class="empty-state mt-3">
-            No remaining class subjects are available for {{ academic_year }}.
-        </p>
-        {% endif %}
+    <div class="button-group mt-3">
+        <a class="btn-app" href="{{ url_for('student.student_marks') }}"
+            >View Marks</a
+        >
+        <a class="btn-outline-app" href="{{ url_for('student.student_home') }}"
+            >Back to dashboard</a
+        >
     </div>
 </div>
 {% endblock %}

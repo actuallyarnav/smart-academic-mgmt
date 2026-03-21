@@ -2,7 +2,7 @@
 <title>Manage Students</title>
 {% endblock %} {% block body %}
 <h1 class="page-title">Student Management</h1>
-<p class="page-subtitle">Link student users to classes and maintain roll records.</p>
+<p class="page-subtitle">Create student accounts and class records from one place.</p>
 
 <div class="split-layout">
     <div class="section-block">
@@ -115,18 +115,19 @@
             />
 
             <label class="form-grid-full">
-                Linked User
-                <select class="form-select" name="user_id" required>
-                    <option value="">Select student user</option>
-                    {% for user in student_users %}
-                    <option
-                        value="{{ user.id }}"
-                        {{ "selected" if edit_student and edit_student.user_id == user.id else "" }}
-                    >
-                        {{ user.email }}
-                    </option>
-                    {% endfor %}
-                </select>
+                Student Email
+                <input
+                    class="form-control"
+                    type="email"
+                    name="email"
+                    value="{{ edit_student.email if edit_student else '' }}"
+                    required
+                />
+            </label>
+
+            <label class="form-grid-full">
+                Password {{ "(leave blank to keep current password)" if edit_student else "" }}
+                <input class="form-control" type="password" name="password" />
             </label>
 
             <label>
@@ -178,11 +179,6 @@
                 {% endif %}
             </div>
         </form>
-        {% if not student_users and not edit_student %}
-        <p class="empty-state mt-3">
-            Create a user with the student role first, then link it here.
-        </p>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

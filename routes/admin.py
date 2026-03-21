@@ -1,23 +1,30 @@
+from datetime import datetime
+
 import psycopg2
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from services.admin_utils import (
+    create_enrollment_for_student,
+    create_student_with_user,
     create_teacher_subject_assignment,
+    create_teacher_with_user,
     create_user,
     delete_class,
-    delete_student,
+    delete_enrollment,
+    delete_student_with_user,
     delete_subject,
-    delete_teacher,
     delete_teacher_subject_assignment,
+    delete_teacher_with_user,
     delete_user,
     get_admin_dashboard_stats,
-    get_available_student_users,
-    get_available_teacher_users,
+    get_available_subjects_for_student_record,
     get_class_by_id,
     get_classes,
+    get_enrollments,
     get_report,
     get_student_by_id,
     get_students,
+    get_students_for_enrollment,
     get_subject_by_id,
     get_subjects,
     get_teacher_by_id,
@@ -26,15 +33,14 @@ from services.admin_utils import (
     get_user_by_id,
     get_users,
     save_class,
-    save_student,
     save_subject,
-    save_teacher,
+    update_student_with_user,
+    update_teacher_with_user,
     update_user,
 )
 from services.auth import require_role
 
 admin_bp = Blueprint("admin", __name__)
-VALID_ROLES = {"student", "teacher", "admin"}
 
 
 def parse_int(value, field_name):
@@ -44,14 +50,19 @@ def parse_int(value, field_name):
         raise ValueError(f"{field_name} must be a valid number.")
 
 
-def handle_admin_error(error, fallback_endpoint):
+def handle_admin_error(error, fallback_endpoint, **kwargs):
     if isinstance(error, ValueError):
         flash(str(error), "danger")
     elif isinstance(error, psycopg2.IntegrityError):
         flash("That action conflicts with an existing record.", "danger")
     else:
         flash("Something went wrong while saving the record.", "danger")
-    return redirect(url_for(fallback_endpoint))
+    return redirect(url_for(fallback_endpoint, **kwargs))
+
+
+def default_academic_year():
+    current_year = datetime.now().year
+    return f"{current_year}-{current_year + 1}"
 
 
 @admin_bp.route("/admin/home")
@@ -68,10 +79,6 @@ def admin_user_mgmt():
         action = request.form.get("action")
         try:
             if action == "save":
-                role = request.form.get("role", "").strip()
-                if role not in VALID_ROLES:
-                    raise ValueError("Role must be student, teacher, or admin.")
-
                 user_id = request.form.get("user_id")
                 email = request.form.get("email", "").strip().lower()
                 password = request.form.get("password", "")
@@ -80,17 +87,15 @@ def admin_user_mgmt():
 
                 if user_id:
                     update_user(
-                        parse_int(user_id, "User"), email, role, password or None
+                        parse_int(user_id, "User"), email, "admin", password or None
                     )
-                    flash("User account updated.", "success")
+                    flash("Admin account updated.", "success")
                 else:
-                    if not password:
-                        raise ValueError("Password is required for new accounts.")
-                    create_user(email, role, password)
-                    flash("User account created.", "success")
+                    create_user(email, "admin", password)
+                    flash("Admin account created.", "success")
             elif action == "delete":
                 delete_user(parse_int(request.form.get("user_id"), "User"))
-                flash("User account deleted.", "success")
+                flash("Admin account deleted.", "success")
         except Exception as error:
             return handle_admin_error(error, "admin.admin_user_mgmt")
 
@@ -100,8 +105,8 @@ def admin_user_mgmt():
     edit_user = get_user_by_id(edit_id) if edit_id else None
     return render_template(
         "admin/user_mgmt.html",
-        users=get_users(),
-        edit_user=edit_user,
+        users=get_users(role="admin"),
+        edit_user=edit_user if edit_user and edit_user["role"] == "admin" else None,
     )
 
 
@@ -113,28 +118,37 @@ def admin_student_mgmt():
         try:
             if action == "save":
                 student_id = request.form.get("student_id")
-                user_id = parse_int(request.form.get("user_id"), "Student user")
+                email = request.form.get("email", "").strip().lower()
+                password = request.form.get("password", "")
                 class_id = parse_int(request.form.get("class_id"), "Class")
                 roll_number = parse_int(request.form.get("roll_number"), "Roll number")
                 student_name = request.form.get("student_name", "")
-                if not student_name.strip():
-                    raise ValueError("Student name is required.")
+                if not email:
+                    raise ValueError("Email is required.")
 
-                save_student(
-                    parse_int(student_id, "Student") if student_id else None,
-                    user_id,
-                    student_name,
-                    roll_number,
-                    class_id,
-                )
-                flash(
-                    "Student record updated."
-                    if student_id
-                    else "Student record created.",
-                    "success",
-                )
+                if student_id:
+                    update_student_with_user(
+                        parse_int(student_id, "Student"),
+                        email,
+                        password,
+                        student_name,
+                        roll_number,
+                        class_id,
+                    )
+                    flash("Student record updated.", "success")
+                else:
+                    create_student_with_user(
+                        email,
+                        password,
+                        student_name,
+                        roll_number,
+                        class_id,
+                    )
+                    flash("Student record created.", "success")
             elif action == "delete":
-                delete_student(parse_int(request.form.get("student_id"), "Student"))
+                delete_student_with_user(
+                    parse_int(request.form.get("student_id"), "Student")
+                )
                 flash("Student record deleted.", "success")
         except Exception as error:
             return handle_admin_error(error, "admin.admin_student_mgmt")
@@ -147,9 +161,6 @@ def admin_student_mgmt():
     students, total_pages = get_students(page=page, sort_by=sort_by, order=order)
     edit_id = request.args.get("edit_id", type=int)
     edit_student = get_student_by_id(edit_id) if edit_id else None
-    student_users = get_available_student_users(
-        edit_student["user_id"] if edit_student else None
-    )
     return render_template(
         "admin/student_mgmt.html",
         students=students,
@@ -158,7 +169,6 @@ def admin_student_mgmt():
         sort_by=sort_by,
         order=order,
         edit_student=edit_student,
-        student_users=student_users,
         classes=get_classes(),
     )
 
@@ -171,28 +181,37 @@ def admin_teacher_mgmt():
         try:
             if action == "save":
                 teacher_id = request.form.get("teacher_id")
-                user_id = parse_int(request.form.get("user_id"), "Teacher user")
+                email = request.form.get("email", "").strip().lower()
+                password = request.form.get("password", "")
                 teacher_name = request.form.get("teacher_name", "")
                 department = request.form.get("department", "")
                 designation = request.form.get("designation", "")
-                if not teacher_name.strip():
-                    raise ValueError("Teacher name is required.")
+                if not email:
+                    raise ValueError("Email is required.")
 
-                save_teacher(
-                    parse_int(teacher_id, "Teacher") if teacher_id else None,
-                    user_id,
-                    teacher_name,
-                    department,
-                    designation,
-                )
-                flash(
-                    "Teacher record updated."
-                    if teacher_id
-                    else "Teacher record created.",
-                    "success",
-                )
+                if teacher_id:
+                    update_teacher_with_user(
+                        parse_int(teacher_id, "Teacher"),
+                        email,
+                        password,
+                        teacher_name,
+                        department,
+                        designation,
+                    )
+                    flash("Teacher record updated.", "success")
+                else:
+                    create_teacher_with_user(
+                        email,
+                        password,
+                        teacher_name,
+                        department,
+                        designation,
+                    )
+                    flash("Teacher record created.", "success")
             elif action == "delete":
-                delete_teacher(parse_int(request.form.get("teacher_id"), "Teacher"))
+                delete_teacher_with_user(
+                    parse_int(request.form.get("teacher_id"), "Teacher")
+                )
                 flash("Teacher record deleted.", "success")
         except Exception as error:
             return handle_admin_error(error, "admin.admin_teacher_mgmt")
@@ -201,14 +220,10 @@ def admin_teacher_mgmt():
 
     edit_id = request.args.get("edit_id", type=int)
     edit_teacher = get_teacher_by_id(edit_id) if edit_id else None
-    teacher_users = get_available_teacher_users(
-        edit_teacher["user_id"] if edit_teacher else None
-    )
     return render_template(
         "admin/teacher_mgmt.html",
         teachers=get_teachers(),
         edit_teacher=edit_teacher,
-        teacher_users=teacher_users,
     )
 
 
@@ -276,6 +291,61 @@ def admin_subject_mgmt():
         subjects=get_subjects(),
         classes=get_classes(),
         edit_subject=edit_subject,
+    )
+
+
+@admin_bp.route("/admin/enrollment_mgmt", methods=["GET", "POST"])
+@require_role("admin")
+def admin_enrollment_mgmt():
+    selected_student = request.args.get("student_id", type=int)
+    academic_year = request.args.get("academic_year", default_academic_year())
+
+    if request.method == "POST":
+        action = request.form.get("action")
+        selected_student = request.form.get("student_id", type=int)
+        academic_year = request.form.get(
+            "academic_year", default_academic_year()
+        ).strip()
+        try:
+            if action == "save":
+                create_enrollment_for_student(
+                    parse_int(selected_student, "Student"),
+                    parse_int(request.form.get("subject_id"), "Subject"),
+                    academic_year,
+                )
+                flash("Enrollment created.", "success")
+            elif action == "delete":
+                delete_enrollment(
+                    parse_int(request.form.get("enrollment_id"), "Enrollment")
+                )
+                flash("Enrollment deleted.", "success")
+        except Exception as error:
+            return handle_admin_error(
+                error,
+                "admin.admin_enrollment_mgmt",
+                student_id=selected_student,
+                academic_year=academic_year,
+            )
+
+        return redirect(
+            url_for(
+                "admin.admin_enrollment_mgmt",
+                student_id=selected_student,
+                academic_year=academic_year,
+            )
+        )
+
+    return render_template(
+        "admin/enrollment_mgmt.html",
+        enrollments=get_enrollments(),
+        students=get_students_for_enrollment(),
+        selected_student=selected_student,
+        academic_year=academic_year,
+        available_subjects=(
+            get_available_subjects_for_student_record(selected_student, academic_year)
+            if selected_student
+            else []
+        ),
     )
 
 

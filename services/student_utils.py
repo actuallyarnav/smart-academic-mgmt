@@ -1,4 +1,4 @@
-from services.database import execute_one, execute_query, execute_write
+from services.database import execute_one, execute_query
 
 
 def calculate_student_percentage(user_id):
@@ -73,59 +73,4 @@ def get_student_enrollments(user_id):
         ORDER BY e.academic_year DESC, sub.subject_code ASC;
         """,
         (user_id,),
-    )
-
-
-def get_available_subjects_for_student(user_id, academic_year):
-    student = get_student_details(user_id)
-    if not student:
-        return []
-
-    return execute_query(
-        """
-        SELECT sub.id, sub.subject_code, sub.name, sub.credits
-        FROM subjects sub
-        WHERE sub.class_id = %s
-          AND NOT EXISTS (
-              SELECT 1
-              FROM students s
-              JOIN enrollments e ON e.student_id = s.id
-              WHERE s.user_id = %s
-                AND e.subject_id = sub.id
-                AND e.academic_year = %s
-          )
-        ORDER BY sub.subject_code ASC;
-        """,
-        (student["class_id"], user_id, academic_year),
-    )
-
-
-def create_student_enrollment(user_id, subject_id, academic_year):
-    student = execute_one(
-        """
-        SELECT s.id AS student_id, s.class_id
-        FROM students s
-        WHERE s.user_id = %s;
-        """,
-        (user_id,),
-    )
-    subject = execute_one(
-        """
-        SELECT id, class_id
-        FROM subjects
-        WHERE id = %s;
-        """,
-        (subject_id,),
-    )
-    if not student or not subject:
-        raise ValueError("Student or subject record was not found.")
-    if student["class_id"] != subject["class_id"]:
-        raise ValueError("You can only enroll in subjects offered for your class.")
-
-    execute_write(
-        """
-        INSERT INTO enrollments (student_id, subject_id, academic_year)
-        VALUES (%s, %s, %s);
-        """,
-        (student["student_id"], subject_id, academic_year.strip()),
     )

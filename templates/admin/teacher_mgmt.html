@@ -2,7 +2,9 @@
 <title>Admin Teacher Management</title>
 {%endblock%} {% block body %}
 <h1 class="page-title">Teacher Management</h1>
-<p class="page-subtitle">Manage teacher records and allocations.</p>
+<p class="page-subtitle">
+    Create teacher login accounts and academic profiles together.
+</p>
 
 <div class="split-layout">
     <div class="section-block">
@@ -37,12 +39,24 @@
                                     >Edit</a
                                 >
                                 <form method="post" class="inline-form">
-                                    <input type="hidden" name="action" value="delete" />
-                                    <input type="hidden" name="teacher_id" value="{{ teacher.id }}" />
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="delete"
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="teacher_id"
+                                        value="{{ teacher.id }}"
+                                    />
                                     <button
                                         type="submit"
                                         class="danger-button"
-                                        onclick="return confirm('Delete this teacher record?')"
+                                        onclick="
+                                            return confirm(
+                                                'Delete this teacher record?',
+                                            );
+                                        "
                                     >
                                         Delete
                                     </button>
@@ -73,18 +87,20 @@
             />
 
             <label class="form-grid-full">
-                Linked User
-                <select class="form-select" name="user_id" required>
-                    <option value="">Select teacher user</option>
-                    {% for user in teacher_users %}
-                    <option
-                        value="{{ user.id }}"
-                        {{ "selected" if edit_teacher and edit_teacher.user_id == user.id else "" }}
-                    >
-                        {{ user.email }}
-                    </option>
-                    {% endfor %}
-                </select>
+                Teacher Email
+                <input
+                    class="form-control"
+                    type="email"
+                    name="email"
+                    value="{{ edit_teacher.email if edit_teacher else '' }}"
+                    required
+                />
+            </label>
+
+            <label class="form-grid-full">
+                Password {{ "(leave blank to keep current password)" if
+                edit_teacher else "" }}
+                <input class="form-control" type="password" name="password" />
             </label>
 
             <label>
@@ -125,17 +141,14 @@
                     {{ "Update Teacher" if edit_teacher else "Create Teacher" }}
                 </button>
                 {% if edit_teacher %}
-                <a class="btn-outline-app" href="{{ url_for('admin.admin_teacher_mgmt') }}"
+                <a
+                    class="btn-outline-app"
+                    href="{{ url_for('admin.admin_teacher_mgmt') }}"
                     >Clear</a
                 >
                 {% endif %}
             </div>
         </form>
-        {% if not teacher_users and not edit_teacher %}
-        <p class="empty-state mt-3">
-            Create a user with the teacher role first, then link it here.
-        </p>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

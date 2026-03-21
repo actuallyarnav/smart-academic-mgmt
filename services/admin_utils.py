@@ -10,6 +10,35 @@ from services.database import (
 )
 
 
+def _validate_student_payload(student_name, roll_number):
+    if not student_name.strip():
+        raise ValueError("Student name is required.")
+    if roll_number < 1:
+        raise ValueError("Roll number must be at least 1.")
+
+
+def _validate_teacher_payload(teacher_name, department, designation):
+    if not teacher_name.strip():
+        raise ValueError("Teacher name is required.")
+    if not department.strip():
+        raise ValueError("Department is required.")
+    if not designation.strip():
+        raise ValueError("Designation is required.")
+
+
+def _delete_student_dependencies(cur, student_id):
+    cur.execute(
+        """
+        DELETE FROM marks
+        WHERE enrollment_id IN (
+            SELECT id FROM enrollments WHERE student_id = %s
+        );
+        """,
+        (student_id,),
+    )
+    cur.execute("DELETE FROM enrollments WHERE student_id = %s;", (student_id,))
+
+
 def get_admin_dashboard_stats():
     return {
         "users": execute_scalar("SELECT COUNT(*) FROM users;") or 0,
@@ -22,9 +51,15 @@ def get_admin_dashboard_stats():
     }
 
 
-def get_users():
+def get_users(role=None):
+    params = []
+    where_clause = ""
+    if role:
+        where_clause = "WHERE u.role = %s"
+        params.append(role)
+
     return execute_query(
-        """
+        f"""
         SELECT
             u.id,
             u.email,
@@ -35,8 +70,10 @@ def get_users():
         FROM users u
         LEFT JOIN students s ON s.user_id = u.id
         LEFT JOIN teachers t ON t.user_id = u.id
-        ORDER BY u.role ASC, u.email ASC;
-        """
+        {where_clause}
+        ORDER BY u.email ASC;
+        """,
+        tuple(params) if params else None,
     )
 
 
@@ -54,6 +91,9 @@ def get_user_by_id(user_id):
 def create_user(email, role, password):
     if role not in {"student", "teacher", "admin"}:
         raise ValueError("Invalid role supplied.")
+    if not password:
+        raise ValueError("Password is required.")
+
     execute_write(
         """
         INSERT INTO users (email, role, password_hash)
@@ -112,14 +152,16 @@ def delete_user(user_id):
             (user_id,),
         )
         if student:
-            delete_student(student["id"])
+            delete_student_with_user(student["id"])
+            return
     elif user["role"] == "teacher":
         teacher = execute_one(
             "SELECT id FROM teachers WHERE user_id = %s;",
             (user_id,),
         )
         if teacher:
-            delete_teacher(teacher["id"])
+            delete_teacher_with_user(teacher["id"])
+            return
 
     execute_write("DELETE FROM users WHERE id = %s;", (user_id,))
 
@@ -219,52 +261,6 @@ def delete_class(class_id):
     run_in_transaction(handler)
 
 
-def get_available_student_users(current_user_id=None):
-    params = ()
-    sql = """
-        SELECT u.id, u.email
-        FROM users u
-        LEFT JOIN students s ON s.user_id = u.id
-        WHERE u.role = 'student'
-          AND (s.id IS NULL OR u.id = %s)
-        ORDER BY u.email ASC;
-    """
-    if current_user_id is None:
-        sql = """
-            SELECT u.id, u.email
-            FROM users u
-            LEFT JOIN students s ON s.user_id = u.id
-            WHERE u.role = 'student' AND s.id IS NULL
-            ORDER BY u.email ASC;
-        """
-    else:
-        params = (current_user_id,)
-    return execute_query(sql, params or None)
-
-
-def get_available_teacher_users(current_user_id=None):
-    params = ()
-    sql = """
-        SELECT u.id, u.email
-        FROM users u
-        LEFT JOIN teachers t ON t.user_id = u.id
-        WHERE u.role = 'teacher'
-          AND (t.id IS NULL OR u.id = %s)
-        ORDER BY u.email ASC;
-    """
-    if current_user_id is None:
-        sql = """
-            SELECT u.id, u.email
-            FROM users u
-            LEFT JOIN teachers t ON t.user_id = u.id
-            WHERE u.role = 'teacher' AND t.id IS NULL
-            ORDER BY u.email ASC;
-        """
-    else:
-        params = (current_user_id,)
-    return execute_query(sql, params or None)
-
-
 def get_students(page=1, per_page=25, sort_by="roll", order="asc"):
     offset = (page - 1) * per_page
     allowed_sort = {
@@ -302,55 +298,96 @@ def get_students(page=1, per_page=25, sort_by="roll", order="asc"):
 def get_student_by_id(student_id):
     return execute_one(
         """
-        SELECT id, user_id, student_name, roll_number, class_id
-        FROM students
-        WHERE id = %s;
+        SELECT
+            s.id,
+            s.user_id,
+            u.email,
+            s.student_name,
+            s.roll_number,
+            s.class_id
+        FROM students s
+        JOIN users u ON u.id = s.user_id
+        WHERE s.id = %s;
         """,
         (student_id,),
     )
 
 
-def save_student(student_id, user_id, student_name, roll_number, class_id):
-    user = execute_one("SELECT role FROM users WHERE id = %s;", (user_id,))
-    if not user or user["role"] != "student":
-        raise ValueError("Selected user must have the student role.")
-    if roll_number < 1:
-        raise ValueError("Roll number must be at least 1.")
+def create_student_with_user(email, password, student_name, roll_number, class_id):
+    _validate_student_payload(student_name, roll_number)
+    if not password:
+        raise ValueError("Password is required for new students.")
 
-    params = (user_id, student_name.strip(), roll_number, class_id)
-    if student_id:
-        execute_write(
-            """
-            UPDATE students
-            SET user_id = %s, student_name = %s, roll_number = %s, class_id = %s
-            WHERE id = %s;
-            """,
-            (*params, student_id),
-        )
-        return
-
-    execute_write(
-        """
-        INSERT INTO students (user_id, student_name, roll_number, class_id)
-        VALUES (%s, %s, %s, %s);
-        """,
-        params,
-    )
-
-
-def delete_student(student_id):
     def handler(cur):
         cur.execute(
             """
-            DELETE FROM marks
-            WHERE enrollment_id IN (
-                SELECT id FROM enrollments WHERE student_id = %s
-            );
+            INSERT INTO users (email, role, password_hash)
+            VALUES (%s, 'student', %s)
+            RETURNING id;
             """,
-            (student_id,),
+            (email.strip().lower(), hash_password(password)),
         )
-        cur.execute("DELETE FROM enrollments WHERE student_id = %s;", (student_id,))
+        user_id = cur.fetchone()["id"]
+        cur.execute(
+            """
+            INSERT INTO students (user_id, student_name, roll_number, class_id)
+            VALUES (%s, %s, %s, %s);
+            """,
+            (user_id, student_name.strip(), roll_number, class_id),
+        )
+
+    run_in_transaction(handler)
+
+
+def update_student_with_user(
+    student_id, email, password, student_name, roll_number, class_id
+):
+    _validate_student_payload(student_name, roll_number)
+    student = get_student_by_id(student_id)
+    if not student:
+        raise ValueError("Student record was not found.")
+
+    def handler(cur):
+        if password:
+            cur.execute(
+                """
+                UPDATE users
+                SET email = %s, role = 'student', password_hash = %s
+                WHERE id = %s;
+                """,
+                (email.strip().lower(), hash_password(password), student["user_id"]),
+            )
+        else:
+            cur.execute(
+                """
+                UPDATE users
+                SET email = %s, role = 'student'
+                WHERE id = %s;
+                """,
+                (email.strip().lower(), student["user_id"]),
+            )
+
+        cur.execute(
+            """
+            UPDATE students
+            SET student_name = %s, roll_number = %s, class_id = %s
+            WHERE id = %s;
+            """,
+            (student_name.strip(), roll_number, class_id, student_id),
+        )
+
+    run_in_transaction(handler)
+
+
+def delete_student_with_user(student_id):
+    student = get_student_by_id(student_id)
+    if not student:
+        return
+
+    def handler(cur):
+        _delete_student_dependencies(cur, student_id)
         cur.execute("DELETE FROM students WHERE id = %s;", (student_id,))
+        cur.execute("DELETE FROM users WHERE id = %s;", (student["user_id"],))
 
     run_in_transaction(handler)
 
@@ -378,41 +415,97 @@ def get_teachers():
 def get_teacher_by_id(teacher_id):
     return execute_one(
         """
-        SELECT id, user_id, teacher_name, department, designation
-        FROM teachers
-        WHERE id = %s;
+        SELECT
+            t.id,
+            t.user_id,
+            u.email,
+            t.teacher_name,
+            t.department,
+            t.designation
+        FROM teachers t
+        JOIN users u ON u.id = t.user_id
+        WHERE t.id = %s;
         """,
         (teacher_id,),
     )
 
 
-def save_teacher(teacher_id, user_id, teacher_name, department, designation):
-    user = execute_one("SELECT role FROM users WHERE id = %s;", (user_id,))
-    if not user or user["role"] != "teacher":
-        raise ValueError("Selected user must have the teacher role.")
+def create_teacher_with_user(email, password, teacher_name, department, designation):
+    _validate_teacher_payload(teacher_name, department, designation)
+    if not password:
+        raise ValueError("Password is required for new teachers.")
 
-    params = (user_id, teacher_name.strip(), department.strip(), designation.strip())
-    if teacher_id:
-        execute_write(
+    def handler(cur):
+        cur.execute(
+            """
+            INSERT INTO users (email, role, password_hash)
+            VALUES (%s, 'teacher', %s)
+            RETURNING id;
+            """,
+            (email.strip().lower(), hash_password(password)),
+        )
+        user_id = cur.fetchone()["id"]
+        cur.execute(
+            """
+            INSERT INTO teachers (user_id, teacher_name, department, designation)
+            VALUES (%s, %s, %s, %s);
+            """,
+            (user_id, teacher_name.strip(), department.strip(), designation.strip()),
+        )
+
+    run_in_transaction(handler)
+
+
+def update_teacher_with_user(
+    teacher_id, email, password, teacher_name, department, designation
+):
+    _validate_teacher_payload(teacher_name, department, designation)
+    teacher = get_teacher_by_id(teacher_id)
+    if not teacher:
+        raise ValueError("Teacher record was not found.")
+
+    def handler(cur):
+        if password:
+            cur.execute(
+                """
+                UPDATE users
+                SET email = %s, role = 'teacher', password_hash = %s
+                WHERE id = %s;
+                """,
+                (email.strip().lower(), hash_password(password), teacher["user_id"]),
+            )
+        else:
+            cur.execute(
+                """
+                UPDATE users
+                SET email = %s, role = 'teacher'
+                WHERE id = %s;
+                """,
+                (email.strip().lower(), teacher["user_id"]),
+            )
+
+        cur.execute(
             """
             UPDATE teachers
-            SET user_id = %s, teacher_name = %s, department = %s, designation = %s
+            SET teacher_name = %s, department = %s, designation = %s
             WHERE id = %s;
             """,
-            (*params, teacher_id),
+            (
+                teacher_name.strip(),
+                department.strip(),
+                designation.strip(),
+                teacher_id,
+            ),
         )
+
+    run_in_transaction(handler)
+
+
+def delete_teacher_with_user(teacher_id):
+    teacher = get_teacher_by_id(teacher_id)
+    if not teacher:
         return
 
-    execute_write(
-        """
-        INSERT INTO teachers (user_id, teacher_name, department, designation)
-        VALUES (%s, %s, %s, %s);
-        """,
-        params,
-    )
-
-
-def delete_teacher(teacher_id):
     marks_count = execute_scalar(
         "SELECT COUNT(*) FROM marks WHERE last_updated_by = %s;",
         (teacher_id,),
@@ -427,6 +520,7 @@ def delete_teacher(teacher_id):
             "DELETE FROM teacher_subjects WHERE teacher_id = %s;", (teacher_id,)
         )
         cur.execute("DELETE FROM teachers WHERE id = %s;", (teacher_id,))
+        cur.execute("DELETE FROM users WHERE id = %s;", (teacher["user_id"],))
 
     run_in_transaction(handler)
 
@@ -549,6 +643,121 @@ def delete_teacher_subject_assignment(teacher_id, subject_id):
         """,
         (teacher_id, subject_id),
     )
+
+
+def get_students_for_enrollment():
+    return execute_query(
+        """
+        SELECT
+            s.id,
+            s.student_name,
+            u.email,
+            s.roll_number,
+            c.id AS class_id,
+            c.year_label,
+            c.department,
+            c.semester
+        FROM students s
+        JOIN users u ON u.id = s.user_id
+        JOIN classes c ON c.id = s.class_id
+        ORDER BY s.student_name ASC;
+        """
+    )
+
+
+def get_enrollments():
+    return execute_query(
+        """
+        SELECT
+            e.id,
+            stu.student_name,
+            u.email,
+            stu.roll_number,
+            sub.subject_code,
+            sub.name AS subject_name,
+            e.academic_year,
+            c.year_label,
+            c.department,
+            c.semester
+        FROM enrollments e
+        JOIN students stu ON stu.id = e.student_id
+        JOIN users u ON u.id = stu.user_id
+        JOIN subjects sub ON sub.id = e.subject_id
+        JOIN classes c ON c.id = stu.class_id
+        ORDER BY e.academic_year DESC, stu.student_name ASC, sub.subject_code ASC;
+        """
+    )
+
+
+def get_available_subjects_for_student_record(student_id, academic_year):
+    student = execute_one(
+        """
+        SELECT id, class_id
+        FROM students
+        WHERE id = %s;
+        """,
+        (student_id,),
+    )
+    if not student:
+        return []
+
+    return execute_query(
+        """
+        SELECT sub.id, sub.subject_code, sub.name, sub.credits
+        FROM subjects sub
+        WHERE sub.class_id = %s
+          AND NOT EXISTS (
+              SELECT 1
+              FROM enrollments e
+              WHERE e.student_id = %s
+                AND e.subject_id = sub.id
+                AND e.academic_year = %s
+          )
+        ORDER BY sub.subject_code ASC;
+        """,
+        (student["class_id"], student_id, academic_year),
+    )
+
+
+def create_enrollment_for_student(student_id, subject_id, academic_year):
+    student = execute_one(
+        """
+        SELECT id, class_id
+        FROM students
+        WHERE id = %s;
+        """,
+        (student_id,),
+    )
+    subject = execute_one(
+        """
+        SELECT id, class_id
+        FROM subjects
+        WHERE id = %s;
+        """,
+        (subject_id,),
+    )
+    if not student or not subject:
+        raise ValueError("Student or subject record was not found.")
+    if student["class_id"] != subject["class_id"]:
+        raise ValueError(
+            "The student can only be enrolled in subjects from their class."
+        )
+
+    execute_write(
+        """
+        INSERT INTO enrollments (student_id, subject_id, academic_year)
+        VALUES (%s, %s, %s);
+        """,
+        (student_id, subject_id, academic_year.strip()),
+    )
+
+
+def delete_enrollment(enrollment_id):
+    def handler(cur):
+        cur.execute("DELETE FROM marks WHERE enrollment_id = %s;", (enrollment_id,))
+        cur.execute("DELETE FROM enrollments WHERE id = %s;", (enrollment_id,))
+
+    run_in_transaction(handler)
 
 
 def get_student_list_report():
