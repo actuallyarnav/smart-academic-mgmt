@@ -1,12 +1,31 @@
 {% extends "base.html" %} {% block head %}
 <title>Enrollment Management</title>
+{% include "admin/_styles.html" %}
 {% endblock %} {% block body %}
-<h1 class="page-title">Enrollment Management</h1>
-<p class="page-subtitle">Administrators control subject enrollment records for students.</p>
+<section class="admin-shell">
+<div class="admin-hero">
+    <div class="section-block admin-hero-copy">
+        <h1 class="page-title">Enrollment Management</h1>
+        <p class="page-subtitle">Manage enrollments of students into subjects.</p>
+    </div>
+    <div class="admin-hero-stats">
+        <div class="stat-card">
+            <div class="detail-label">Enrollments</div>
+            <div class="detail-value">{{ enrollments|length }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="detail-label">Students</div>
+            <div class="detail-value">{{ students|length }}</div>
+        </div>
+    </div>
+</div>
 
 <div class="split-layout">
     <div class="section-block">
-        <h2 class="section-heading">Existing Enrollments</h2>
+        <div class="admin-section-header">
+            <h2 class="section-heading">Existing Enrollments</h2>
+            <p class="admin-note">Admin-controlled enrollment records only.</p>
+        </div>
         <div class="app-table-wrap">
             <table class="app-table">
                 <thead>
@@ -49,7 +68,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="8">No enrollments found.</td>
+                        <td colspan="8" class="admin-table-empty">No enrollments found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -129,9 +148,10 @@
     </div>
 </div>
 
-<div class="button-group mt-3">
+<div class="admin-actions">
     <a class="btn-outline-app" href="{{ url_for('admin.admin_home') }}"
         >Back to admin home</a
     >
 </div>
+</section>
 {% endblock %}

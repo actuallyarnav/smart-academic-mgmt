@@ -24,37 +24,37 @@
 
         <style>
             html[data-bs-theme="dark"] {
-                --background-color: #10161f;
-                --surface-color: #18212d;
-                --surface-color-2: #202c3b;
-                --border-color: #2d3b4c;
-                --text-color: #e8edf5;
-                --muted-color: #9aabc0;
-                --accent-color: #4a8eff;
-                --accent-hover: #3e79d6;
-                --danger-color: #d16a78;
-                --link-color: #93b9ff;
-                --link-hover-color: #bfd5ff;
-                --row-hover-color: #243142;
-                --button-text-color: #f4f8ff;
-                --radius: 0.65rem;
+                --background-color: #11171b;
+                --surface-color: #182126;
+                --surface-color-2: #202c32;
+                --border-color: #314047;
+                --text-color: #edf2ee;
+                --muted-color: #98a69d;
+                --accent-color: #5c826a;
+                --accent-hover: #4d715a;
+                --danger-color: #cc6f7a;
+                --link-color: #90b59a;
+                --link-hover-color: #bfd7c4;
+                --row-hover-color: #233036;
+                --button-text-color: #f6f9f6;
+                --radius: 0.75rem;
             }
 
             html[data-bs-theme="light"] {
-                --background-color: #f4f7fb;
+                --background-color: #f3f5f1;
                 --surface-color: #ffffff;
-                --surface-color-2: #edf3fb;
-                --border-color: #c9d6e6;
-                --text-color: #162030;
-                --muted-color: #5c6b7d;
-                --accent-color: #1d63d9;
-                --accent-hover: #154fae;
-                --danger-color: #ba4b5e;
-                --link-color: #1b5ecb;
-                --link-hover-color: #13489c;
-                --row-hover-color: #e3ebf7;
+                --surface-color-2: #edf1eb;
+                --border-color: #d3dbd1;
+                --text-color: #18211d;
+                --muted-color: #627066;
+                --accent-color: #426c54;
+                --accent-hover: #355643;
+                --danger-color: #b85664;
+                --link-color: #3f6b54;
+                --link-hover-color: #2f523f;
+                --row-hover-color: #e6ebe5;
                 --button-text-color: #ffffff;
-                --radius: 0.65rem;
+                --radius: 0.75rem;
             }
 
             body {
@@ -63,6 +63,7 @@
                 font-family:
                     "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
                 min-height: 100vh;
+                line-height: 1.55;
             }
 
             a {
@@ -75,32 +76,32 @@
             }
 
             .mainbody {
-                max-width: 1160px;
+                max-width: 1200px;
                 margin: 0 auto;
-                padding: 0 1.25rem;
+                padding: 0 1.4rem;
             }
 
             .navbar {
-                padding: 1rem 0;
+                padding: 0.9rem 0;
                 border-bottom: 1px solid var(--border-color);
                 background-color: var(--background-color);
             }
 
             .navbar-brand {
                 font-weight: 700;
-                letter-spacing: 0.02em;
+                letter-spacing: 0.015em;
                 color: var(--text-color);
             }
 
             .nav-link {
                 color: var(--muted-color);
                 border-radius: var(--radius);
-                padding: 0.35rem 0.7rem;
+                padding: 0.42rem 0.78rem;
             }
 
             .nav-link:hover {
                 color: var(--text-color);
-                background-color: var(--surface-color);
+                background-color: var(--surface-color-2);
             }
 
             .theme-toggle {
@@ -109,7 +110,7 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                background-color: transparent;
+                background-color: var(--surface-color);
                 border: 1px solid var(--border-color);
                 color: var(--text-color);
                 border-radius: 999px;
@@ -119,12 +120,12 @@
 
             .theme-toggle:hover {
                 color: var(--text-color);
-                background-color: var(--surface-color);
+                background-color: var(--surface-color-2);
                 border-color: var(--accent-color);
             }
 
             .content {
-                padding: 2rem 0 3rem;
+                padding: 2.2rem 0 3.2rem;
             }
 
             .alert {
@@ -135,21 +136,22 @@
             }
 
             .page-title {
-                font-size: 1.75rem;
+                font-size: 1.85rem;
                 font-weight: 700;
-                margin-bottom: 0.35rem;
+                margin-bottom: 0.3rem;
+                letter-spacing: -0.02em;
             }
 
             .page-subtitle {
                 color: var(--muted-color);
-                margin-bottom: 1.25rem;
+                margin-bottom: 1.3rem;
             }
 
             .section-block {
                 background-color: var(--surface-color);
                 border: 1px solid var(--border-color);
                 border-radius: var(--radius);
-                padding: 1rem 1.1rem;
+                padding: 1.15rem 1.2rem;
             }
 
             .content-narrow {
@@ -159,7 +161,7 @@
             .section-heading {
                 font-size: 1.1rem;
                 font-weight: 600;
-                margin-bottom: 0.75rem;
+                margin-bottom: 0.85rem;
             }
 
             .detail-grid {
@@ -172,7 +174,7 @@
                 background-color: var(--surface-color-2);
                 border: 1px solid var(--border-color);
                 border-radius: var(--radius);
-                padding: 0.65rem 0.75rem;
+                padding: 0.75rem 0.85rem;
             }
 
             .detail-label {
@@ -191,9 +193,9 @@
             .toolbar {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 0.75rem;
+                gap: 0.8rem;
                 align-items: end;
-                margin-bottom: 0.9rem;
+                margin-bottom: 1rem;
             }
 
             .toolbar label {
@@ -202,7 +204,7 @@
                 gap: 0.35rem;
                 font-size: 0.85rem;
                 color: var(--muted-color);
-                min-width: 170px;
+                min-width: 180px;
             }
 
             .toolbar select,
@@ -213,6 +215,8 @@
                 color: var(--text-color);
                 border: 1px solid var(--border-color);
                 border-radius: var(--radius);
+                padding-top: 0.55rem;
+                padding-bottom: 0.55rem;
             }
 
             .toolbar select:focus,
@@ -238,7 +242,7 @@
             .app-table th,
             .app-table td {
                 border-bottom: 1px solid var(--border-color);
-                padding: 0.65rem 0.7rem;
+                padding: 0.72rem 0.78rem;
                 text-align: left;
                 white-space: nowrap;
             }
@@ -263,7 +267,7 @@
                 color: var(--button-text-color);
                 border-radius: var(--radius);
                 font-weight: 600;
-                padding: 0.5rem 0.95rem;
+                padding: 0.55rem 1rem;
                 display: inline-block;
                 cursor: pointer;
             }
@@ -279,7 +283,7 @@
                 border: 1px solid var(--border-color);
                 color: var(--text-color);
                 border-radius: var(--radius);
-                padding: 0.5rem 0.95rem;
+                padding: 0.55rem 1rem;
                 display: inline-block;
                 cursor: pointer;
             }
@@ -323,7 +327,7 @@
                 background-color: var(--surface-color-2);
                 border: 1px solid var(--border-color);
                 border-radius: var(--radius);
-                padding: 0.85rem;
+                padding: 0.95rem;
             }
 
             .stat-card .detail-label {
@@ -364,7 +368,7 @@
                 border: 1px solid var(--border-color);
                 border-radius: var(--radius);
                 color: var(--text-color);
-                padding: 0.35rem 0.65rem;
+                padding: 0.38rem 0.7rem;
                 font-size: 0.86rem;
             }
 

@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, request, session
 
 from services.auth import require_role
 from services.student_utils import (
     calculate_student_percentage,
+    get_student_academic_years,
     get_student_details,
     get_student_enrollments,
+    get_student_performance,
 )
 
 student_bp = Blueprint("student", __name__)
@@ -66,4 +68,20 @@ def student_attendance():
 @student_bp.route("/student/performance")
 @require_role("student")
 def student_performance():
-    return render_template("error/404.html"), 404
+    user_id = session["user_id"]
+    student = get_student_details(user_id)
+    if not student:
+        return render_template("error/404.html"), 404
+
+    academic_years = get_student_academic_years(user_id)
+    selected_year = request.args.get("academic_year")
+    if selected_year not in academic_years:
+        selected_year = academic_years[0] if academic_years else None
+
+    return render_template(
+        "student/performance.html",
+        student=student,
+        academic_years=academic_years,
+        selected_year=selected_year,
+        performance=get_student_performance(user_id, selected_year),
+    )

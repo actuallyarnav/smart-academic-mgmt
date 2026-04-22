@@ -1,11 +1,30 @@
 {% extends "base.html" %} {% block head %}
 <title>Manage Students</title>
+{% include "admin/_styles.html" %}
 {% endblock %} {% block body %}
-<h1 class="page-title">Student Management</h1>
-<p class="page-subtitle">Create student accounts and class records from one place.</p>
+<section class="admin-shell">
+<div class="admin-hero">
+    <div class="section-block admin-hero-copy">
+        <h1 class="page-title">Student Management</h1>
+        <p class="page-subtitle">Create student accounts.</p>
+    </div>
+    <div class="admin-hero-stats">
+        <div class="stat-card">
+            <div class="detail-label">Students</div>
+            <div class="detail-value">{{ students|length }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="detail-label">Page</div>
+            <div class="detail-value">{{ page }}/{{ total_pages }}</div>
+        </div>
+    </div>
+</div>
 
 <div class="split-layout">
     <div class="section-block">
+        <div class="admin-section-header">
+            <h2 class="section-heading">Student Records</h2>
+        </div>
         <form method="get" class="toolbar">
             <label>
                 Sort By
@@ -78,7 +97,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6">No students found.</td>
+                        <td colspan="6" class="admin-table-empty">No students found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -182,9 +201,10 @@
     </div>
 </div>
 
-<div class="button-group mt-3">
+<div class="admin-actions">
     <a class="btn-outline-app" href="{{ url_for('admin.admin_home') }}"
         >Back to admin home</a
     >
 </div>
+</section>
 {% endblock %}
