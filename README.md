@@ -119,14 +119,28 @@ Prerequisites: Python3, uv, PostgreSQL, git
 
    Set up the project dependencies:
 
+   Then run:
+
+   ```bash
+   psql -d student_db_2 -U postgres -f database/create_tables.sql
    ```
-   uv venv
-   source .venv/bin/activate
-   uv pip install -r requirements.txt
+
+   The file path can change depending on where your database is located, so tweak that as needed.
+
+4. Set up the admin account. You will need to bootstrap one manually so you can actually log in to the system.
+
+   First, generate a password hash:
+
+   ```bash
+   python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-admin-password'))"
    ```
 
    Run the app:
 
+   This will return a hash value that looks something like:
+
+   ```text
+   scrypt:32768:8:1$zHf5vC886y3Bu...
    ```
    uv run app.py
    ```
@@ -155,6 +169,7 @@ Prerequisites: Python3, uv, PostgreSQL, git
 These are enhancements that could be added in a full-fledged system:
 * Attendance management
 * Frontend improvements
+* Bulk relationship adding (maybe using CSV files)
 
 ### Developed as part of the Third-year B. Sc. (Computer Science) Final Semester project.
 
