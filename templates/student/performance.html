@@ -1,0 +1,142 @@
+{% extends "base.html" %} {% block head %}
+<title>Student Performance</title>
+{% endblock %} {% block body %}
+<h1 class="page-title">Performance</h1>
+<p class="page-subtitle">
+    A quick summary of your overall results and year-wise academic performance.
+</p>
+
+<div class="section-block mb-3">
+    <form method="get" class="toolbar">
+        <label>
+            Academic Year
+            <select name="academic_year" onchange="this.form.submit()">
+                {% if academic_years %}
+                    {% for year in academic_years %}
+                    <option
+                        value="{{ year }}"
+                        {{ "selected" if selected_year == year else "" }}
+                    >
+                        {{ year }}
+                    </option>
+                    {% endfor %}
+                {% else %}
+                    <option value="">No academic years available</option>
+                {% endif %}
+            </select>
+        </label>
+    </form>
+</div>
+
+<div class="stat-grid mb-3">
+    <div class="stat-card">
+        <div class="detail-label">Overall Percentage</div>
+        <div class="detail-value">{{ performance.overall_percentage }}%</div>
+    </div>
+    <div class="stat-card">
+        <div class="detail-label">
+            {{ selected_year if selected_year else "Selected Year" }} Percentage
+        </div>
+        <div class="detail-value">{{ performance.academic_year_percentage }}%</div>
+    </div>
+    <div class="stat-card">
+        <div class="detail-label">Pass Count</div>
+        <div class="detail-value">{{ performance.pass_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="detail-label">Fail Count</div>
+        <div class="detail-value">{{ performance.fail_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="detail-label">Average Grade</div>
+        <div class="detail-value">
+            {% if performance.average_grade %}
+                {{ performance.average_grade.label }}
+                <span class="muted">({{ performance.average_grade.points }})</span>
+            {% else %}
+                -
+            {% endif %}
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="detail-label">Graded Subjects</div>
+        <div class="detail-value">{{ performance.graded_subject_count }}</div>
+    </div>
+</div>
+
+<div class="split-layout">
+    <div class="section-block">
+        <h2 class="section-heading">Best Subject</h2>
+        {% if performance.best_subject %}
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Subject</div>
+                <div class="detail-value">
+                    {{ performance.best_subject.subject_name }}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Code</div>
+                <div class="detail-value">
+                    {{ performance.best_subject.subject_code }}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Marks</div>
+                <div class="detail-value">
+                    {{ performance.best_subject.marks_obtained }}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Grade</div>
+                <div class="detail-value">{{ performance.best_subject.grade }}</div>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-state">No graded subjects found for the selected academic year.</p>
+        {% endif %}
+    </div>
+
+    <div class="section-block">
+        <h2 class="section-heading">Lowest Subject</h2>
+        {% if performance.lowest_subject %}
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Subject</div>
+                <div class="detail-value">
+                    {{ performance.lowest_subject.subject_name }}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Code</div>
+                <div class="detail-value">
+                    {{ performance.lowest_subject.subject_code }}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Marks</div>
+                <div class="detail-value">
+                    {{ performance.lowest_subject.marks_obtained }}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Grade</div>
+                <div class="detail-value">{{ performance.lowest_subject.grade }}</div>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-state">No graded subjects found for the selected academic year.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="button-group mt-3">
+    <a class="btn-app" href="{{ url_for('student.student_marks') }}">View Marks</a>
+    <a class="btn-outline-app" href="{{ url_for('student.student_enrollments') }}"
+        >View Enrollments</a
+    >
+    <a class="btn-outline-app" href="{{ url_for('student.student_home') }}"
+        >Back to student home</a
+    >
+</div>
+{% endblock %}
