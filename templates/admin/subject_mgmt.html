@@ -1,12 +1,31 @@
 {% extends "base.html" %} {% block head %}
 <title>Admin Subject Management</title>
+{% include "admin/_styles.html" %}
 {%endblock%} {% block body %}
-<h1 class="page-title">Subject Management</h1>
-<p class="page-subtitle">Create and maintain subjects for each class.</p>
+<section class="admin-shell">
+<div class="admin-hero">
+    <div class="section-block admin-hero-copy">
+        <h1 class="page-title">Subject Management</h1>
+        <p class="page-subtitle">Create and maintain subjects for each class.</p>
+    </div>
+    <div class="admin-hero-stats">
+        <div class="stat-card">
+            <div class="detail-label">Subjects</div>
+            <div class="detail-value">{{ subjects|length }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="detail-label">Classes</div>
+            <div class="detail-value">{{ classes|length }}</div>
+        </div>
+    </div>
+</div>
 
 <div class="split-layout">
     <div class="section-block">
-        <h2 class="section-heading">Subjects</h2>
+        <div class="admin-section-header">
+            <h2 class="section-heading">Subjects</h2>
+            <p class="admin-note">Subject catalog and assignment counts.</p>
+        </div>
         <div class="app-table-wrap">
             <table class="app-table">
                 <thead>
@@ -50,7 +69,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6">No subjects found.</td>
+                        <td colspan="6" class="admin-table-empty">No subjects found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -134,9 +153,10 @@
     </div>
 </div>
 
-<div class="button-group mt-3">
+<div class="admin-actions">
     <a class="btn-outline-app" href="{{ url_for('admin.admin_home') }}"
         >Back to admin home</a
     >
 </div>
+</section>
 {% endblock %}

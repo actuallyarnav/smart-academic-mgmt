@@ -1,34 +1,47 @@
 {% extends "base.html" %} {% block head %}
 <title>Reports</title>
+{% include "admin/_styles.html" %}
 {% endblock %} {% block body %}
-<h1 class="page-title">Reports</h1>
-<p class="page-subtitle">Read reports for all information stored in the system.</p>
-
-<div class="section-block mb-3">
-    <form method="get" class="toolbar">
-        <label>
-            Report
-            <select name="report" onchange="this.form.submit()">
-                <option value="students" {{ "selected" if report.key == "students" else "" }}>
-                    Student List
-                </option>
-                <option value="enrollments" {{ "selected" if report.key == "enrollments" else "" }}>
-                    Subject Enrollments
-                </option>
-                <option value="marks" {{ "selected" if report.key == "marks" else "" }}>
-                    Marks Report
-                </option>
-                <option value="assignments" {{ "selected" if report.key == "assignments" else "" }}>
-                    Teacher Assignments
-                </option>
-            </select>
-        </label>
-    </form>
+<section class="admin-shell">
+<div class="admin-hero">
+    <div class="section-block admin-hero-copy">
+        <h1 class="page-title">Reports</h1>
+        <p class="page-subtitle">Read reports for all information stored in the system.</p>
+    </div>
+    <div class="section-block">
+        <div class="admin-section-header">
+            <h2 class="section-heading">Report Filter</h2>
+        </div>
+        <form method="get" class="toolbar mb-0">
+            <label>
+                Report
+                <select name="report" onchange="this.form.submit()">
+                    <option value="students" {{ "selected" if report.key == "students" else "" }}>
+                        Student List
+                    </option>
+                    <option value="enrollments" {{ "selected" if report.key == "enrollments" else "" }}>
+                        Subject Enrollments
+                    </option>
+                    <option value="marks" {{ "selected" if report.key == "marks" else "" }}>
+                        Marks Report
+                    </option>
+                    <option value="assignments" {{ "selected" if report.key == "assignments" else "" }}>
+                        Teacher Assignments
+                    </option>
+                </select>
+            </label>
+        </form>
+    </div>
 </div>
 
 <div class="section-block">
-    <h2 class="section-heading">{{ report.title }}</h2>
-    <p class="page-subtitle mb-3">{{ report.description }}</p>
+    <div class="admin-section-header">
+        <div>
+            <h2 class="section-heading">{{ report.title }}</h2>
+            <p class="admin-note">{{ report.description }}</p>
+        </div>
+        <span class="status-pill">{{ report.rows|length }} row{{ "" if report.rows|length == 1 else "s" }}</span>
+    </div>
     <div class="app-table-wrap">
         <table class="app-table">
             <thead>
@@ -47,7 +60,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="{{ report.columns|length }}">No records found.</td>
+                    <td colspan="{{ report.columns|length }}" class="admin-table-empty">No records found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -55,9 +68,10 @@
     </div>
 </div>
 
-<div class="button-group mt-3">
+<div class="admin-actions">
     <a class="btn-outline-app" href="{{ url_for('admin.admin_home') }}"
         >Back to admin home</a
     >
 </div>
+</section>
 {% endblock %}

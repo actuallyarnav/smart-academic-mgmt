@@ -1,10 +1,24 @@
 {% extends "base.html" %} {% block head %}
 <title>403 - Forbidden</title>
+<style>
+    .error-shell {
+        padding: 1rem 0;
+    }
+
+    .error-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1rem;
+    }
+</style>
 {% endblock %} {% block body %}
-<div class="section-block error-shell">
+<section class="error-shell">
     <div class="error-code">403</div>
     <h1 class="page-title error-title">Forbidden</h1>
     <p class="muted">Your account does not have permission to access this page.</p>
-    <a class="btn-app" href="{{ url_for('login') }}">Back to login</a>
-</div>
+    <div class="error-actions">
+        <a class="btn-app" href="{{ url_for('login') }}">Back to login</a>
+    </div>
+</section>
 {% endblock %}

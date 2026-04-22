@@ -1,48 +1,99 @@
 {% extends "base.html" %} {% block head %}
 <title>Admin Home</title>
-{%endblock%} {% block body %}
-<h1 class="page-title">Admin Dashboard</h1>
-<p class="page-subtitle">
-    Manage core records, assignments, and academic reports.
-</p>
+{% include "admin/_styles.html" %} {%endblock%} {% block body %}
+<section class="admin-shell">
+    <div class="admin-hero">
+        <div class="section-block admin-hero-copy">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle">
+                Manage core records, assignments, and academic reports.
+            </p>
+        </div>
 
-<div class="stat-grid mb-3">
-    <div class="stat-card">
-        <div class="detail-label">Users</div>
-        <div class="detail-value">{{ stats.users }}</div>
+        <div class="admin-hero-stats">
+            <div class="stat-card">
+                <div class="detail-label">Users</div>
+                <div class="detail-value">{{ stats.users }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Classes</div>
+                <div class="detail-value">{{ stats.classes }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Students</div>
+                <div class="detail-value">{{ stats.students }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Teachers</div>
+                <div class="detail-value">{{ stats.teachers }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Subjects</div>
+                <div class="detail-value">{{ stats.subjects }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Enrollments</div>
+                <div class="detail-value">{{ stats.enrollments }}</div>
+            </div>
+        </div>
     </div>
-    <div class="stat-card">
-        <div class="detail-label">Classes</div>
-        <div class="detail-value">{{ stats.classes }}</div>
-    </div>
-    <div class="stat-card">
-        <div class="detail-label">Students</div>
-        <div class="detail-value">{{ stats.students }}</div>
-    </div>
-    <div class="stat-card">
-        <div class="detail-label">Teachers</div>
-        <div class="detail-value">{{ stats.teachers }}</div>
-    </div>
-    <div class="stat-card">
-        <div class="detail-label">Subjects</div>
-        <div class="detail-value">{{ stats.subjects }}</div>
-    </div>
-    <div class="stat-card">
-        <div class="detail-label">Enrollments</div>
-        <div class="detail-value">{{ stats.enrollments }}</div>
-    </div>
-</div>
 
-<div class="section-block">
-    <ul class="action-list">
-        <li><a href="/admin/user_mgmt">Manage Admin Accounts</a></li>
-        <li><a href="/admin/student_mgmt">Manage Students</a></li>
-        <li><a href="/admin/teacher_mgmt">Manage Teachers</a></li>
-        <li><a href="/admin/class_mgmt">Manage Classes</a></li>
-        <li><a href="/admin/subject_mgmt">Manage Subjects</a></li>
-        <li><a href="/admin/enrollment_mgmt">Manage Enrollments</a></li>
-        <li><a href="/admin/assignment_mgmt">Manage Teacher Assignments</a></li>
-        <li><a href="/admin/reports">View Reports</a></li>
-    </ul>
-</div>
+    <div class="section-block">
+        <div class="admin-section-header">
+            <h2 class="section-heading">Management Areas</h2>
+        </div>
+        <div class="admin-action-grid">
+            <a class="admin-action-card" href="/admin/user_mgmt">
+                <div class="admin-action-card-title">Manage Admin Accounts</div>
+                <p class="admin-action-card-text">
+                    Create and maintain administrator logins.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/student_mgmt">
+                <div class="admin-action-card-title">Manage Students</div>
+                <p class="admin-action-card-text">
+                    Create student records and maintain class details.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/teacher_mgmt">
+                <div class="admin-action-card-title">Manage Teachers</div>
+                <p class="admin-action-card-text">
+                    Maintain teacher records and linked accounts.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/class_mgmt">
+                <div class="admin-action-card-title">Manage Classes</div>
+                <p class="admin-action-card-text">
+                    Configure academic years, departments, and semesters.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/subject_mgmt">
+                <div class="admin-action-card-title">Manage Subjects</div>
+                <p class="admin-action-card-text">
+                    Create subjects and link them to classes.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/enrollment_mgmt">
+                <div class="admin-action-card-title">Manage Enrollments</div>
+                <p class="admin-action-card-text">
+                    Assign students to class subjects by academic year.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/assignment_mgmt">
+                <div class="admin-action-card-title">
+                    Manage Teacher Assignments
+                </div>
+                <p class="admin-action-card-text">
+                    Link teachers to the subjects they handle.
+                </p>
+            </a>
+            <a class="admin-action-card" href="/admin/reports">
+                <div class="admin-action-card-title">View Reports</div>
+                <p class="admin-action-card-text">
+                    Read system-wide academic and administrative reports.
+                </p>
+            </a>
+        </div>
+    </div>
+</section>
 {% endblock %}
