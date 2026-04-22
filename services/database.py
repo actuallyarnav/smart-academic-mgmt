@@ -54,6 +54,18 @@ def valid_login(role, email, password):
     return user
 
 
+def get_admin_emails():
+    rows = execute_query(
+        """
+        SELECT email
+        FROM users
+        WHERE role = 'admin'
+        ORDER BY email ASC;
+        """
+    )
+    return [row["email"] for row in rows]
+
+
 def execute_query(sql, params=None):
     conn = get_db_conn()
     try:

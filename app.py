@@ -18,7 +18,7 @@ from routes.student import student_bp
 from routes.teacher import teacher_bp
 
 # my own utils
-from services.database import valid_login
+from services.database import get_admin_emails, valid_login
 
 # config n stuff
 load_dotenv()
@@ -74,6 +74,19 @@ def login():
 @app.route("/about", methods=["POST", "GET"])
 def about():
     return render_template("about.html")
+
+
+@app.route("/request-account")
+def request_account():
+    role = request.args.get("role")
+    if role not in {"student", "teacher"}:
+        role = None
+
+    return render_template(
+        "request_acc.html",
+        role=role,
+        admin_emails=get_admin_emails(),
+    )
 
 
 @app.route("/logout")

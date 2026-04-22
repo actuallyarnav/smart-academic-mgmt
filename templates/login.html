@@ -3,8 +3,49 @@
 <style>
     .login-shell {
         position: relative;
-        max-width: 760px;
+        max-width: 980px;
         margin: 0 auto;
+        min-height: calc(100vh - 170px);
+        display: flex;
+        align-items: center;
+    }
+
+    .login-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) 430px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .login-left,
+    .login-right {
+        min-height: 100%;
+        padding: 2rem;
+    }
+
+    .login-left {
+        display: flex;
+        align-items: center;
+        border-right: 1px solid var(--border-color);
+    }
+
+    .login-title {
+        margin: 0;
+        font-size: clamp(2.4rem, 5vw, 3.6rem);
+        line-height: 0.98;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+    }
+
+    .login-right-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .login-right-copy {
+        margin: 0.35rem 0 0;
+        color: var(--muted-color);
     }
 
     .login-form label {
@@ -36,8 +77,132 @@
         border-color: var(--accent-color);
     }
 
+    .role-selector {
+        display: flex;
+        gap: 0.3rem;
+        margin: 1rem 0 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: calc(var(--radius) + 0.1rem);
+        overflow: hidden;
+        padding: 0.25rem;
+        background-color: var(--surface-color-2);
+    }
+
     .role-selector button {
-        min-width: 125px;
+        flex: 1 1 0;
+        min-height: 56px;
+        padding: 0.75rem 0.65rem;
+        border: 0;
+        border-radius: 0;
+        text-align: center;
+        background-color: transparent;
+        color: var(--muted-color);
+        box-shadow: none;
+    }
+
+    .role-selector .btn-outline-app:hover {
+        background-color: var(--surface-color);
+        color: var(--text-color);
+        border-color: transparent;
+    }
+
+    .role-selector .btn-app {
+        background-color: var(--accent-color);
+        border-color: transparent;
+        color: var(--button-text-color);
+        border-radius: calc(var(--radius) - 0.05rem);
+    }
+
+    .role-selector .btn-app:hover {
+        background-color: var(--accent-hover);
+        border-color: transparent;
+        color: var(--button-text-color);
+    }
+
+    .role-button-label {
+        display: block;
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+    .selected-role {
+        margin-bottom: 1rem;
+        padding: 0.75rem 0.85rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        background-color: var(--surface-color-2);
+    }
+
+    .selected-role-label {
+        display: block;
+        color: var(--muted-color);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .selected-role-value {
+        display: block;
+        margin-top: 0.2rem;
+        font-weight: 700;
+    }
+
+    .login-submit {
+        width: 100%;
+        min-height: 46px;
+    }
+
+    .login-request {
+        margin-top: 0.7rem;
+        text-align: center;
+        font-size: 0.88rem;
+    }
+
+    .login-request a {
+        color: var(--muted-color);
+    }
+
+    .login-request a:hover {
+        color: var(--text-color);
+    }
+
+    .login-empty {
+        margin: 0;
+        padding: 0.95rem 1rem;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius);
+        color: var(--muted-color);
+    }
+
+    @media (max-width: 900px) {
+        .login-shell {
+            min-height: 0;
+            display: block;
+        }
+
+        .login-card {
+            grid-template-columns: 1fr;
+        }
+
+        .login-left {
+            border-right: 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .login-left,
+        .login-right {
+            padding: 1.2rem;
+        }
+
+        .role-selector {
+            flex-direction: column;
+        }
+
+        .role-selector button {
+            border-radius: calc(var(--radius) - 0.05rem);
+        }
     }
 </style>
 {% endblock %} {% block body %}
@@ -50,75 +215,92 @@
         ></a>
     </div>
 
-    <h1 class="page-title">Smart Academic Management System</h1>
-    <p class="page-subtitle">
-        Sign in to continue with your institutional account.
-    </p>
+    <div class="section-block login-card">
+        <div class="login-left">
+            <h1 class="login-title">Smart Academic Management System</h1>
+        </div>
 
-    <div class="section-block">
-        <h2 class="section-heading">Choose Role</h2>
-        <form method="get" class="button-group role-selector mb-3">
-            <button
-                class="{{ 'btn-app' if role == 'student' else 'btn-outline-app' }}"
-                name="role"
-                value="student"
-                type="submit"
-            >
-                Student
-            </button>
-            <button
-                class="{{ 'btn-app' if role == 'teacher' else 'btn-outline-app' }}"
-                name="role"
-                value="teacher"
-                type="submit"
-            >
-                Teacher
-            </button>
-            <button
-                class="{{ 'btn-app' if role == 'admin' else 'btn-outline-app' }}"
-                name="role"
-                value="admin"
-                type="submit"
-            >
-                Admin
-            </button>
-        </form>
+        <div class="login-right">
+            <h2 class="login-right-title">Sign In</h2>
+            <p class="login-right-copy">Choose your role, then continue.</p>
 
-        {% if role %}
-        <form method="post" action="/" class="login-form row g-3">
-            <input type="hidden" name="role" value="{{ role }}" />
-
-            <div class="col-12 col-md-6">
-                <label for="email">Email ID</label>
-                <input
-                    id="email"
-                    class="form-control"
-                    type="text"
-                    name="email"
-                    required
-                />
-            </div>
-
-            <div class="col-12 col-md-6">
-                <label for="password">Password</label>
-                <input
-                    id="password"
-                    class="form-control"
-                    type="password"
-                    name="password"
-                    required
-                />
-            </div>
-
-            <div class="col-12">
-                <button type="submit" class="btn-app">
-                    Login as {{ role|capitalize }}
+            <form method="get" class="role-selector">
+                <button
+                    class="{{ 'btn-app' if role == 'student' else 'btn-outline-app' }}"
+                    name="role"
+                    value="student"
+                    type="submit"
+                >
+                    <span class="role-button-label">Student</span>
                 </button>
+                <button
+                    class="{{ 'btn-app' if role == 'teacher' else 'btn-outline-app' }}"
+                    name="role"
+                    value="teacher"
+                    type="submit"
+                >
+                    <span class="role-button-label">Teacher</span>
+                </button>
+                <button
+                    class="{{ 'btn-app' if role == 'admin' else 'btn-outline-app' }}"
+                    name="role"
+                    value="admin"
+                    type="submit"
+                >
+                    <span class="role-button-label">Admin</span>
+                </button>
+            </form>
+
+            {% if role %}
+            <div class="selected-role">
+                <span class="selected-role-label">Selected Role</span>
+                <span class="selected-role-value">{{ role|capitalize }}</span>
             </div>
-        </form>
-        {% else %}
-        <p class="muted mb-0">Select a role to load the sign-in form.</p>
-        {% endif %}
+
+            <form method="post" action="/" class="login-form row g-3">
+                <input type="hidden" name="role" value="{{ role }}" />
+
+                <div class="col-12">
+                    <label for="email">Email ID</label>
+                    <input
+                        id="email"
+                        class="form-control"
+                        type="text"
+                        name="email"
+                        required
+                    />
+                </div>
+
+                <div class="col-12">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        class="form-control"
+                        type="password"
+                        name="password"
+                        required
+                    />
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn-app login-submit">
+                        Login as {{ role|capitalize }}
+                    </button>
+                    {% if role in ['student', 'teacher'] %}
+                    <div class="login-request">
+                        <a
+                            href="{{ url_for('request_account', role=role) }}"
+                        >
+                            Need an account? Request one here.
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </form>
+            {% else %}
+            <p class="login-empty">Select a role to load the sign-in form.</p>
+            {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}
