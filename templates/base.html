@@ -4,6 +4,18 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+        <script>
+            (function () {
+                const savedTheme = localStorage.getItem("sams-theme");
+                if (savedTheme) {
+                    document.documentElement.setAttribute(
+                        "data-bs-theme",
+                        savedTheme,
+                    );
+                }
+            })();
+        </script>
+
         <link
             href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
             rel="stylesheet"
@@ -11,73 +23,423 @@
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
         <style>
-            :root {
-                --button-color: #ef6f6c;
-                --button-focus: #a20111;
-                --background-color: #121212;
-                --text-color: #ecebf3;
+            html[data-bs-theme="dark"] {
+                --background-color: #11171b;
+                --surface-color: #182126;
+                --surface-color-2: #202c32;
+                --border-color: #314047;
+                --text-color: #edf2ee;
+                --muted-color: #98a69d;
+                --accent-color: #5c826a;
+                --accent-hover: #4d715a;
+                --danger-color: #cc6f7a;
+                --link-color: #90b59a;
+                --link-hover-color: #bfd7c4;
+                --row-hover-color: #233036;
+                --button-text-color: #f6f9f6;
+                --radius: 0.75rem;
+            }
+
+            html[data-bs-theme="light"] {
+                --background-color: #f3f5f1;
+                --surface-color: #ffffff;
+                --surface-color-2: #edf1eb;
+                --border-color: #d3dbd1;
+                --text-color: #18211d;
+                --muted-color: #627066;
+                --accent-color: #426c54;
+                --accent-hover: #355643;
+                --danger-color: #b85664;
+                --link-color: #3f6b54;
+                --link-hover-color: #2f523f;
+                --row-hover-color: #e6ebe5;
+                --button-text-color: #ffffff;
+                --radius: 0.75rem;
             }
 
             body {
                 background-color: var(--background-color);
                 color: var(--text-color);
+                font-family:
+                    "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+                min-height: 100vh;
+                line-height: 1.55;
             }
 
-            table {
-                padding: 15px;
-                margin: 15px;
+            a {
+                color: var(--link-color);
+                text-decoration: none;
             }
 
-            .btn-custom {
-                background-color: var(--button-color);
-                border-color: var(--button-color);
-                padding: 0.8rem 1.5rem;
-                font-size: 0.95rem;
-            }
-            .btn-custom:active {
-                box-shadow: none;
-            }
-            .btn-custom:active:focus {
-                background-color: var(--button-color);
-                border-color: var(--button-color);
-            }
-            .btn-custom:hover {
-                background-color: var(--button-focus);
-                border-color: var(--button-focus);
+            a:hover {
+                color: var(--link-hover-color);
             }
 
             .mainbody {
                 max-width: 1200px;
                 margin: 0 auto;
-                padding: 0 2rem;
+                padding: 0 1.4rem;
             }
 
             .navbar {
-                padding: 1.5rem 0;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 0.9rem 0;
+                border-bottom: 1px solid var(--border-color);
+                background-color: var(--background-color);
             }
 
             .navbar-brand {
-                font-weight: 600;
-                letter-spacing: 0.02em;
+                font-weight: 700;
+                letter-spacing: 0.015em;
+                color: var(--text-color);
             }
 
             .nav-link {
-                color: #b5b5b5;
+                color: var(--muted-color);
+                border-radius: var(--radius);
+                padding: 0.42rem 0.78rem;
             }
 
             .nav-link:hover {
-                color: #ffffff;
+                color: var(--text-color);
+                background-color: var(--surface-color-2);
             }
 
-            .alert {
-                border-radius: 0;
-                border: none;
-                font-size: 0.9rem;
+            .theme-toggle {
+                width: 2.5rem;
+                height: 2.5rem;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--surface-color);
+                border: 1px solid var(--border-color);
+                color: var(--text-color);
+                border-radius: 999px;
+                padding: 0;
+                font-size: 1rem;
+            }
+
+            .theme-toggle:hover {
+                color: var(--text-color);
+                background-color: var(--surface-color-2);
+                border-color: var(--accent-color);
             }
 
             .content {
-                padding: 3rem 0;
+                padding: 2.2rem 0 3.2rem;
+            }
+
+            .alert {
+                border-radius: var(--radius);
+                border: 1px solid var(--border-color);
+                font-size: 0.9rem;
+                margin-top: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.85rem;
+                font-weight: 700;
+                margin-bottom: 0.3rem;
+                letter-spacing: -0.02em;
+            }
+
+            .page-subtitle {
+                color: var(--muted-color);
+                margin-bottom: 1.3rem;
+            }
+
+            .section-block {
+                background-color: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 1.15rem 1.2rem;
+            }
+
+            .content-narrow {
+                max-width: 900px;
+            }
+
+            .section-heading {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 0.85rem;
+            }
+
+            .detail-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 0.6rem;
+            }
+
+            .detail-item {
+                background-color: var(--surface-color-2);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 0.75rem 0.85rem;
+            }
+
+            .detail-label {
+                color: var(--muted-color);
+                font-size: 0.82rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+            }
+
+            .detail-value {
+                font-size: 1rem;
+                margin-top: 0.25rem;
+                font-weight: 600;
+            }
+
+            .toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+                align-items: end;
+                margin-bottom: 1rem;
+            }
+
+            .toolbar label {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                font-size: 0.85rem;
+                color: var(--muted-color);
+                min-width: 180px;
+            }
+
+            .toolbar select,
+            .toolbar input,
+            .form-control,
+            .form-select {
+                background-color: var(--surface-color-2);
+                color: var(--text-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding-top: 0.55rem;
+                padding-bottom: 0.55rem;
+            }
+
+            .toolbar select:focus,
+            .toolbar input:focus,
+            .form-control:focus,
+            .form-select:focus {
+                border-color: var(--accent-color);
+                box-shadow: none;
+            }
+
+            .app-table-wrap {
+                overflow-x: auto;
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+            }
+
+            .app-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 0;
+            }
+
+            .app-table th,
+            .app-table td {
+                border-bottom: 1px solid var(--border-color);
+                padding: 0.72rem 0.78rem;
+                text-align: left;
+                white-space: nowrap;
+            }
+
+            .app-table th {
+                background-color: var(--surface-color-2);
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+
+            .app-table tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .app-table tbody tr:hover {
+                background-color: var(--row-hover-color);
+            }
+
+            .btn-app {
+                background-color: var(--accent-color);
+                border: 1px solid var(--accent-color);
+                color: var(--button-text-color);
+                border-radius: var(--radius);
+                font-weight: 600;
+                padding: 0.55rem 1rem;
+                display: inline-block;
+                cursor: pointer;
+            }
+
+            .btn-app:hover {
+                background-color: var(--accent-hover);
+                border-color: var(--accent-hover);
+                color: var(--button-text-color);
+            }
+
+            .btn-outline-app {
+                background-color: transparent;
+                border: 1px solid var(--border-color);
+                color: var(--text-color);
+                border-radius: var(--radius);
+                padding: 0.55rem 1rem;
+                display: inline-block;
+                cursor: pointer;
+            }
+
+            .btn-outline-app:hover {
+                background-color: var(--surface-color-2);
+                border-color: var(--accent-color);
+                color: var(--text-color);
+            }
+
+            .button-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.55rem;
+            }
+
+            .split-layout {
+                display: grid;
+                grid-template-columns: 1.1fr 0.9fr;
+                gap: 1rem;
+                align-items: start;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .form-grid-full {
+                grid-column: 1 / -1;
+            }
+
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .stat-card {
+                background-color: var(--surface-color-2);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                padding: 0.95rem;
+            }
+
+            .stat-card .detail-label {
+                margin-bottom: 0.25rem;
+            }
+
+            .inline-form {
+                display: inline;
+            }
+
+            .danger-button {
+                background-color: transparent;
+                border: 1px solid var(--danger-color);
+                color: #f0c9cf;
+                border-radius: var(--radius);
+                padding: 0.4rem 0.75rem;
+            }
+
+            .danger-button:hover {
+                background-color: rgba(209, 106, 120, 0.12);
+                color: #ffe6ea;
+            }
+
+            .table-actions {
+                display: flex;
+                gap: 0.45rem;
+                flex-wrap: wrap;
+            }
+
+            .empty-state {
+                color: var(--muted-color);
+                margin: 0;
+            }
+
+            .status-pill {
+                display: inline-block;
+                background-color: var(--surface-color-2);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                color: var(--text-color);
+                padding: 0.38rem 0.7rem;
+                font-size: 0.86rem;
+            }
+
+            .pagination-row {
+                margin-top: 0.95rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+                align-items: center;
+            }
+
+            .pagination-row a {
+                display: inline-block;
+                background-color: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius);
+                color: var(--text-color);
+                padding: 0.3rem 0.7rem;
+            }
+
+            .pagination-row a:hover {
+                border-color: var(--accent-color);
+                color: var(--text-color);
+            }
+
+            .muted {
+                color: var(--muted-color);
+            }
+
+            .error-code {
+                font-size: 2.2rem;
+                font-weight: 700;
+                color: var(--danger-color);
+                margin-bottom: 0.35rem;
+            }
+
+            .error-shell {
+                max-width: 680px;
+            }
+
+            .error-title {
+                font-size: 1.45rem;
+            }
+
+            .action-list {
+                list-style: none;
+                padding-left: 0;
+                margin: 0;
+                display: grid;
+                gap: 0.6rem;
+            }
+
+            .action-list a {
+                display: block;
+                padding: 0.75rem 0.9rem;
+                border-radius: var(--radius);
+                border: 1px solid var(--border-color);
+                background-color: var(--surface-color);
+                color: var(--text-color);
+                font-weight: 600;
+            }
+
+            .action-list a:hover {
+                border-color: var(--accent-color);
+                background-color: var(--surface-color-2);
+            }
+
+            @media (max-width: 900px) {
+                .split-layout {
+                    grid-template-columns: 1fr;
+                }
             }
         </style>
 
@@ -96,17 +458,60 @@
             <div
                 class="mainbody d-flex justify-content-between align-items-center"
             >
-                <a class="navbar-brand text-white" href="/"
+                <a class="navbar-brand" href="/"
                     >Smart Academics Management System</a
                 >
 
                 <div class="d-flex gap-3">
                     <a class="nav-link" href="/">Home</a>
                     <a class="nav-link" href="/about">About</a>
+                    {% if session.get("user_id") %}
+                    <a class="nav-link" href="/logout">Logout</a>
+                    {% endif %}
+                    <button
+                        class="theme-toggle"
+                        id="theme-toggle"
+                        type="button"
+                        aria-label="Toggle color theme"
+                        title="Toggle color theme"
+                    >
+                        ☀
+                    </button>
                 </div>
             </div>
         </nav>
 
         <main class="mainbody content">{% block body %}{% endblock %}</main>
+        <script>
+            (function () {
+                const storageKey = "sams-theme";
+                const toggle = document.getElementById("theme-toggle");
+                const root = document.documentElement;
+
+                function applyTheme(theme) {
+                    root.setAttribute("data-bs-theme", theme);
+                    localStorage.setItem(storageKey, theme);
+                    if (toggle) {
+                        toggle.textContent = theme === "dark" ? "☀" : "☾";
+                    }
+                }
+
+                const activeTheme =
+                    localStorage.getItem(storageKey) ||
+                    root.getAttribute("data-bs-theme") ||
+                    "dark";
+                applyTheme(activeTheme);
+
+                if (toggle) {
+                    toggle.addEventListener("click", function () {
+                        applyTheme(
+                            root.getAttribute("data-bs-theme") === "dark"
+                                ? "light"
+                                : "dark",
+                        );
+                    });
+                }
+            })();
+        </script>
     </body>
 </html>

@@ -1,12 +1,13 @@
 {% extends "base.html" %} {% block head %}
-<title>Student Marks</title>
-{% include "student/_styles.html" %} {%endblock%} {% block body %}
+<title>Student Enrollments</title>
+{% include "student/_styles.html" %} {% endblock %} {% block body %}
 <section class="student-shell">
     <div class="student-hero">
         <div class="section-block student-hero-copy">
-            <h1 class="page-title">Marks</h1>
+            <h1 class="page-title">Subject Enrollments</h1>
             <p class="page-subtitle">
-                Your subject enrollments, marks, and grading details.
+                Your current subject registrations. Enrollment changes are
+                handled by administrators.
             </p>
         </div>
 
@@ -16,47 +17,51 @@
                 <div class="detail-value">{{ student.name }}</div>
             </div>
             <div class="stat-card">
-                <div class="detail-label">Records</div>
-                <div class="detail-value">{{ enrollments|length }}</div>
+                <div class="detail-label">Class</div>
+                <div class="detail-value">
+                    {{ student.year_label }} / Sem {{ student.semester }}
+                </div>
             </div>
         </div>
     </div>
 
     <div class="section-block">
         <div class="student-section-header">
-            <h2 class="section-heading">Academic Performance</h2>
+            <h2 class="section-heading">Current Enrollments</h2>
+            <span class="status-pill"
+                >{{ enrollments|length }} subject{{ "" if enrollments|length ==
+                1 else "s" }}</span
+            >
         </div>
         <div class="app-table-wrap">
             <table class="app-table">
                 <thead>
                     <tr>
                         <th>Academic Year</th>
+                        <th>Subject Code</th>
                         <th>Subject</th>
-                        <th>Code</th>
                         <th>Credits</th>
                         <th>Marks</th>
                         <th>Grade</th>
-                        <th>Updated At</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for row in enrollments %}
                     <tr>
                         <td>{{ row.academic_year }}</td>
-                        <td>{{ row.subject_name }}</td>
                         <td>{{ row.subject_code }}</td>
+                        <td>{{ row.subject_name }}</td>
                         <td>{{ row.credits }}</td>
                         <td>
                             {{ row.marks_obtained if row.marks_obtained is not
                             none else "Pending" }}
                         </td>
                         <td>{{ row.grade or "-" }}</td>
-                        <td>{{ row.updated_at or "-" }}</td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="student-table-empty">
-                            No enrollments or marks found.
+                        <td colspan="6" class="student-table-empty">
+                            No enrollments found.
                         </td>
                     </tr>
                     {% endfor %}
@@ -70,8 +75,8 @@
             >
             <a
                 class="btn-outline-app"
-                href="{{ url_for('student.student_enrollments') }}"
-                >View Enrollments</a
+                href="{{ url_for('student.student_marks') }}"
+                >View Marks</a
             >
             <a
                 class="btn-outline-app"

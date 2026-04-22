@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block head %}
-<title>404 - Page Not Found</title>
+<title>401 - Unauthorized</title>
 <style>
     .error-shell {
         padding: 1rem 0;
@@ -14,9 +14,9 @@
 </style>
 {% endblock %} {% block body %}
 <section class="error-shell">
-    <div class="error-code">404</div>
-    <h1 class="page-title error-title">Page Not Found</h1>
-    <p class="muted">The page you are looking for does not exist or was moved.</p>
+    <div class="error-code">401</div>
+    <h1 class="page-title error-title">Unauthorized</h1>
+    <p class="muted">You need to sign in before accessing this page.</p>
     <div class="error-actions">
         <a class="btn-app" href="{{ url_for('login') }}">Back to login</a>
     </div>

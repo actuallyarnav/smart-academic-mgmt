@@ -1,3 +1,176 @@
 {% extends "base.html" %} {% block head %}
 <title>Admin Class Management</title>
-{%endblock%} {% block body %} {% endblock %}
+{% include "admin/_styles.html" %}
+{%endblock%} {% block body %}
+<section class="admin-shell">
+<div class="admin-hero">
+    <div class="section-block admin-hero-copy">
+        <h1 class="page-title">Class Management</h1>
+        <p class="page-subtitle">Configure classes, semesters, and yearly batches.</p>
+    </div>
+    <div class="admin-hero-stats">
+        <div class="stat-card">
+            <div class="detail-label">Classes</div>
+            <div class="detail-value">{{ classes|length }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="detail-label">Mode</div>
+            <div class="detail-value">{{ "Edit" if edit_class else "Create" }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="split-layout">
+    <div class="section-block">
+        <div class="admin-section-header">
+            <h2 class="section-heading">Configured Classes</h2>
+            <p class="admin-note">Academic structure and downstream counts.</p>
+        </div>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Year</th>
+                        <th>Department</th>
+                        <th>Semester</th>
+                        <th>Admission Year</th>
+                        <th>Students</th>
+                        <th>Subjects</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class_row in classes %}
+                    <tr>
+                        <td>{{ class_row.id }}</td>
+                        <td>{{ class_row.year_label }}</td>
+                        <td>{{ class_row.department }}</td>
+                        <td>{{ class_row.semester }}</td>
+                        <td>{{ class_row.admission_year }}</td>
+                        <td>{{ class_row.student_count }}</td>
+                        <td>{{ class_row.subject_count }}</td>
+                        <td>
+                            <div class="table-actions">
+                                <a
+                                    class="btn-outline-app"
+                                    href="{{ url_for('admin.admin_class_mgmt', edit_id=class_row.id) }}"
+                                    >Edit</a
+                                >
+                                <form method="post" class="inline-form">
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value="delete"
+                                    />
+                                    <input
+                                        type="hidden"
+                                        name="class_id"
+                                        value="{{ class_row.id }}"
+                                    />
+                                    <button
+                                        type="submit"
+                                        class="danger-button"
+                                        onclick="
+                                            return confirm(
+                                                'Delete this class and its dependent records?',
+                                            );
+                                        "
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="admin-table-empty">No classes found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <h2 class="section-heading">
+            {{ "Edit Class" if edit_class else "Add Class" }}
+        </h2>
+        <form method="post" class="form-grid">
+            <input type="hidden" name="action" value="save" />
+            <input
+                type="hidden"
+                name="class_id"
+                value="{{ edit_class.id if edit_class else '' }}"
+            />
+
+            <label>
+                Year Label
+                <input
+                    class="form-control"
+                    type="text"
+                    name="year_label"
+                    value="{{ edit_class.year_label if edit_class else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Department
+                <input
+                    class="form-control"
+                    type="text"
+                    name="department"
+                    value="{{ edit_class.department if edit_class else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Semester
+                <input
+                    class="form-control"
+                    type="number"
+                    name="semester"
+                    min="1"
+                    value="{{ edit_class.semester if edit_class else '' }}"
+                    required
+                />
+            </label>
+
+            <label>
+                Admission Year
+                <input
+                    class="form-control"
+                    type="number"
+                    name="admission_year"
+                    min="2000"
+                    value="{{ edit_class.admission_year if edit_class else '' }}"
+                    required
+                />
+            </label>
+
+            <div class="button-group form-grid-full">
+                <button type="submit" class="btn-app">
+                    {{ "Update Class" if edit_class else "Create Class" }}
+                </button>
+                {% if edit_class %}
+                <a
+                    class="btn-outline-app"
+                    href="{{ url_for('admin.admin_class_mgmt') }}"
+                    >Clear</a
+                >
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="admin-actions">
+    <a class="btn-outline-app" href="{{ url_for('admin.admin_home') }}"
+        >Back to admin home</a
+    >
+</div>
+</section>
+{% endblock %}

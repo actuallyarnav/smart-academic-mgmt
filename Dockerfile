@@ -1,16 +1,22 @@
-FROM python:3.11-slim
+FROM python:3.14-slim
 
-    ENV PYTHONDONTWRITEBYTECODE=1
-    ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-    WORKDIR /app
+WORKDIR /app
 
-    COPY requirements.txt .
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential libpq-dev curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-    RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:0.6.8 /uv /uvx /bin/
 
-    COPY . .
+COPY pyproject.toml README.md ./
+RUN uv sync --no-dev
 
-    EXPOSE 8080
+COPY . .
+RUN uv sync --no-dev
 
-    CMD ["python3", "app.py"]
+EXPOSE 8080
+
+CMD ["uv", "run", "app.py"]

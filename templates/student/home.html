@@ -1,16 +1,70 @@
 {% extends "base.html" %} {% block head %}
 <title>Student Home</title>
-{%endblock%} {% block body %}
-<h1>Welcome, Student</h1>
-<h2>Name: {{ student.name}}</h2>
-<h2>Roll No: {{ student.roll_number }}</h2>
-<h2>Department: {{ student.department }}</h2>
+{% include "student/_styles.html" %} {%endblock%} {% block body %}
+<section class="student-shell">
+    <div class="student-hero">
+        <div class="section-block student-hero-copy">
+            <h1 class="page-title">Student Dashboard</h1>
+            <p class="page-subtitle">Welcome, {{ student.name }}.</p>
+        </div>
 
-<div class="options">
-    <a href="/student/attendance" class="button">View Attendance</a>
-    <br />
-    <a href="/student/marks" class="button">View Marks</a> <br />
-    <a href="/student/performance" class="button">View Performance</a>
-    <br />
-</div>
+        <div class="student-hero-stats">
+            <div class="stat-card">
+                <div class="detail-label">Roll Number</div>
+                <div class="detail-value">{{ student.roll_number }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Department</div>
+                <div class="detail-value">{{ student.department }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Enrollments</div>
+                <div class="detail-value">{{ enrollment_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="student-section-header">
+            <h2 class="section-heading">Profile</h2>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Academic Year</div>
+                <div class="detail-value">{{ student.year_label }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Semester</div>
+                <div class="detail-value">{{ student.semester }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Admission Year</div>
+                <div class="detail-value">{{ student.admission_year }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value">{{ student.email }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Class ID</div>
+                <div class="detail-value">{{ student.class_id }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="student-section-header">
+            <h2 class="section-heading">Academic Records</h2>
+        </div>
+        <div class="student-actions">
+            <a href="/student/enrollments" class="btn-outline-app"
+                >View Enrollments</a
+            >
+            <a href="/student/marks" class="btn-outline-app">View Marks</a>
+            <a href="/student/performance" class="btn-outline-app"
+                >View Performance</a
+            >
+        </div>
+    </div>
+</section>
 {% endblock %}

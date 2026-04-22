@@ -1,0 +1,109 @@
+{% extends "base.html" %} {% block head %}
+<title>Add Marks</title>
+{% include "teacher/_styles.html" %}
+{% endblock %} {% block body %}
+<section class="teacher-shell">
+    <div class="teacher-hero">
+        <div class="section-block teacher-hero-copy">
+            <h1 class="page-title">Marks Management</h1>
+            <p class="page-subtitle">Enter and update marks for students enrolled in your subjects.</p>
+        </div>
+
+        <div class="teacher-inline-stats">
+            <div class="stat-card">
+                <div class="detail-label">Available Subjects</div>
+                <div class="detail-value">{{ subjects|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Enrollments</div>
+                <div class="detail-value">{{ enrollment_rows|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="teacher-section-header">
+            <h2 class="section-heading">Subject Enrollments</h2>
+            <p class="teacher-note">Choose a subject, then save marks row by row.</p>
+        </div>
+
+        <form method="get" class="toolbar teacher-compact-toolbar">
+            <label>
+                Select Subject
+                <select name="subject_id" onchange="this.form.submit()">
+                    {% for subject in subjects %}
+                    <option
+                        value="{{ subject.id }}"
+                        {{ "selected" if subject.id == selected_subject else "" }}>
+                        {{ subject.subject_code }} - {{ subject.name }} / {{ subject.year_label }} / Sem {{ subject.semester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </form>
+
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Enrollment ID</th>
+                        <th>Name</th>
+                        <th>Roll No</th>
+                        <th>Academic Year</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                        <th>Last Updated</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in enrollment_rows %}
+                    <tr>
+                        <td>{{ row.enrollment_id }}</td>
+                        <td>{{ row.student_name }}</td>
+                        <td>{{ row.roll_number }}</td>
+                        <td>{{ row.academic_year }}</td>
+                        <td>
+                            <input
+                                class="form-control"
+                                type="number"
+                                name="marks_obtained"
+                                min="0"
+                                max="100"
+                                value="{{ row.marks_obtained if row.marks_obtained is not none else '' }}"
+                                form="marks-form-{{ row.enrollment_id }}"
+                                required
+                            />
+                        </td>
+                        <td>{{ row.grade or "-" }}</td>
+                        <td>
+                            {{ row.updated_at or "-" }}
+                            {% if row.last_updated_by %}
+                            <div class="muted">by {{ row.last_updated_by }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" id="marks-form-{{ row.enrollment_id }}">
+                                <input type="hidden" name="subject_id" value="{{ selected_subject }}" />
+                                <input type="hidden" name="enrollment_id" value="{{ row.enrollment_id }}" />
+                                <button type="submit" class="btn-app">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="teacher-table-empty">No enrollments found for this subject.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="teacher-actions">
+        <a class="btn-outline-app" href="{{ url_for('teacher.teacher_home') }}"
+            >Back to teacher home</a
+        >
+    </div>
+</section>
+{% endblock %}

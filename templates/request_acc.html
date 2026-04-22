@@ -1,0 +1,152 @@
+{% extends "base.html" %} {% block head %}
+<title>Request Account</title>
+<style>
+    .request-shell {
+        max-width: 980px;
+        margin: 0 auto;
+        min-height: calc(100vh - 170px);
+        display: flex;
+        align-items: center;
+    }
+
+    .request-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) 430px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .request-left,
+    .request-right {
+        min-height: 100%;
+        padding: 2rem;
+    }
+
+    .request-left {
+        display: flex;
+        align-items: center;
+        border-right: 1px solid var(--border-color);
+    }
+
+    .request-title {
+        margin: 0;
+        font-size: clamp(2.4rem, 5vw, 3.6rem);
+        line-height: 0.98;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+    }
+
+    .request-right-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .request-right-copy {
+        margin: 0.45rem 0 0;
+        color: var(--muted-color);
+        line-height: 1.7;
+    }
+
+    .request-mail-list {
+        margin: 1.2rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.7rem;
+    }
+
+    .request-mail-list a {
+        display: block;
+        padding: 0.8rem 0.9rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        background-color: var(--surface-color-2);
+        color: var(--text-color);
+        font-weight: 600;
+    }
+
+    .request-mail-list a:hover {
+        border-color: var(--accent-color);
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    .request-empty {
+        margin: 1.2rem 0 0;
+        padding: 0.95rem 1rem;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius);
+        color: var(--muted-color);
+    }
+
+    .request-actions {
+        margin-top: 1.2rem;
+    }
+
+    @media (max-width: 900px) {
+        .request-shell {
+            min-height: 0;
+            display: block;
+        }
+
+        .request-card {
+            grid-template-columns: 1fr;
+        }
+
+        .request-left {
+            border-right: 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .request-left,
+        .request-right {
+            padding: 1.2rem;
+        }
+    }
+</style>
+{% endblock %} {% block body %}
+<section class="request-shell">
+    <div class="section-block request-card">
+        <div class="request-left">
+            <h1 class="request-title">Smart Academic Management System</h1>
+        </div>
+
+        <div class="request-right">
+            <h2 class="request-right-title">Request Account</h2>
+            <p class="request-right-copy">
+                {% if role %}
+                    Email an administrator to request a {{ role }} account.
+                {% else %}
+                    Email an administrator to request access to the system.
+                {% endif %}
+            </p>
+
+            {% if admin_emails %}
+            <ul class="request-mail-list">
+                {% for email in admin_emails %}
+                <li>
+                    <a href="mailto:{{ email }}">{{ email }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="request-empty">
+                No administrator email addresses are currently available.
+            </p>
+            {% endif %}
+
+            <div class="request-actions">
+                <a
+                    class="btn-outline-app"
+                    href="{{ url_for('login', role=role) if role else url_for('login') }}"
+                >
+                    Back to login
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

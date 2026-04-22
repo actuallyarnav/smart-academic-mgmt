@@ -1,8 +1,177 @@
 {% extends "base.html" %} {% block head %}
 <title>Teacher Home</title>
+{% include "teacher/_styles.html" %}
 {%endblock%} {% block body %}
-<h1>Welcome, {{ teacher.name }}</h1>
-<h2>Department: {{ teacher.department }}</h2>
-<h2>Designation: {{ teacher.designation }}</h2>
+<section class="teacher-shell">
+    <div class="teacher-hero">
+        <div class="section-block teacher-hero-copy">
+            <h1 class="page-title">Teacher Dashboard</h1>
+            <p class="page-subtitle">Welcome, {{ teacher.name }}.</p>
+        </div>
 
+        <div class="teacher-inline-stats">
+            <div class="stat-card">
+                <div class="detail-label">Department</div>
+                <div class="detail-value">{{ teacher.department }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Designation</div>
+                <div class="detail-value">{{ teacher.designation }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="detail-label">Subjects</div>
+                <div class="detail-value">{{ subjects|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="teacher-section-header">
+            <h2 class="section-heading">Profile</h2>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Department</div>
+                <div class="detail-value">{{ teacher.department }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Designation</div>
+                <div class="detail-value">{{ teacher.designation }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value">{{ teacher.email }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="teacher-section-header">
+            <h2 class="section-heading">Assigned Subjects</h2>
+            <a class="btn-app" href="{{ url_for('teacher.teacher_marks') }}"
+                >Enter or Update Marks</a
+            >
+        </div>
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Subject</th>
+                        <th>Credits</th>
+                        <th>Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.subject_code }}</td>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.credits }}</td>
+                        <td>{{ subject.year_label }} / {{ subject.department }} / Sem {{ subject.semester }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="teacher-table-empty">No subjects assigned.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-block">
+        <div class="teacher-section-header">
+            <h2 class="section-heading">Students You Teach</h2>
+        </div>
+
+        <form method="get" class="toolbar teacher-compact-toolbar">
+            <label>
+                Class
+                <select name="class_id" onchange="this.form.submit()">
+                    <option value="" {{ "selected" if selected_class is none else "" }}>
+                        All Classes
+                    </option>
+                    {% for c in classes %}
+                    <option
+                        value="{{ c.id }}"
+                        {{ "selected" if selected_class == c.id else "" }}>
+                        {{ c.year_label }} - {{ c.department }} - Sem {{ c.semester }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                Sort
+                <select name="sort_by" onchange="this.form.submit()">
+                    <option value="roll" {{ "selected" if sort_by == "roll" else "" }}>
+                        Roll Number
+                    </option>
+                    <option value="name" {{ "selected" if sort_by == "name" else "" }}>
+                        Name
+                    </option>
+                    <option value="class" {{ "selected" if sort_by == "class" else "" }}>
+                        Class
+                    </option>
+                </select>
+            </label>
+
+            <label>
+                Order
+                <select name="order" onchange="this.form.submit()">
+                    <option value="asc" {{ "selected" if order == "asc" else "" }}>
+                        Ascending
+                    </option>
+                    <option value="desc" {{ "selected" if order == "desc" else "" }}>
+                        Descending
+                    </option>
+                </select>
+            </label>
+        </form>
+
+        <div class="app-table-wrap">
+            <table class="app-table">
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ s.roll_number }}</td>
+                        <td>{{ s.student_name }}</td>
+                        <td>{{ s.year_label }} - {{ s.department }} - Sem {{ s.semester }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="teacher-table-empty">No students found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-row">
+            {% if page > 1 %}
+            <a
+                href="?page={{ page-1 }}&class_id={{ selected_class if selected_class is not none else '' }}&sort_by={{ sort_by }}&order={{ order }}"
+                >Previous</a
+            >
+            {% endif %}
+
+            <span class="muted">Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+            <a
+                href="?page={{ page+1 }}&class_id={{ selected_class if selected_class is not none else '' }}&sort_by={{ sort_by }}&order={{ order }}"
+                >Next</a
+            >
+            {% endif %}
+        </div>
+    </div>
+</section>
 {% endblock %}

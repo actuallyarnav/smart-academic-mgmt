@@ -1,0 +1,87 @@
+Smart Academic Management System
+Functional Requirements
+
+User Management
+
+The system must support three types of users: administrator, teacher, and student.
+
+Users must be able to log in using an email address and password.
+
+User accounts must store encrypted passwords.
+
+Administrators must be able to manage user accounts.
+
+Class Management
+
+The system must allow administrators to create and manage academic classes.
+
+Each class must contain information such as year label, department, semester, and admission year.
+
+The system must ensure that duplicate class records cannot exist for the same year, department, and semester.
+
+Student Management
+
+Administrators must be able to create and manage student records.
+
+Each student must be linked to a user account.
+
+Each student must belong to a specific class.
+
+Students must have a roll number that is unique within their class.
+
+Teacher Management
+
+Administrators must be able to create and manage teacher records.
+
+Each teacher must be linked to a user account.
+
+Teachers must store information such as name, department, and designation.
+
+Subject Management
+
+Administrators must be able to create and manage subjects.
+
+Each subject must have a subject code, name, credit value, and associated class.
+
+Each subject must have a unique subject code.
+
+Teacher–Subject Assignment
+
+The system must allow teachers to be assigned to one or more subjects.
+
+A subject may be taught by one or more teachers.
+
+The system must prevent duplicate teacher–subject assignments.
+
+Student Enrollment
+
+Students must be able to enroll in subjects offered in their class.
+
+Each enrollment must record the student, subject, and academic year.
+
+The system must prevent duplicate enrollment of the same student in the same subject within the same academic year.
+
+Marks Management
+
+Teachers must be able to enter marks for students enrolled in their subjects.
+
+Marks must be stored for each enrollment record.
+
+Marks must be restricted to values between 0 and 100.
+
+Teachers must be able to update marks if required.
+
+The system must record the teacher who last updated the marks and the timestamp of the update.
+
+Record Viewing
+
+Students must be able to view their own subject enrollments and marks.
+
+Teachers must be able to view records of students enrolled in the subjects they teach.
+
+Administrators must be able to view all system records.
+
+Reporting
+The system must generate structured reports based on stored academic data.
+
+Reports may include student lists, subject enrollments, marks reports, and teacher–subject assignments.
