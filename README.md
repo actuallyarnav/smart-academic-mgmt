@@ -64,22 +64,9 @@ The system uses a relational database with the following core tables:
 
 ## Setup Instructions
 
-<<<<<<< HEAD
 Steps to run the app.
 
 Prerequisites: `python3`, `postgresql`, `git`
-=======
-Prerequisites: Python3, uv, PostgreSQL, git
-
-1. Clone the repository:
-
-   ```
-   git clone --branch <branchname> https://github.com/actuallyarnav/smart-academic-mgmt
-   cd smart-academic-mgmt
-   ```
-
-2. Create the `.env` file and place it in the root of the project:
->>>>>>> cd5832703411c3a69a9e42d92b4cc16368716063
 
 1. Clone the repo:
 
@@ -87,13 +74,10 @@ Prerequisites: Python3, uv, PostgreSQL, git
    git clone --branch <branchname> https://github.com/actuallyarnav/smart-academic-mgmt
    cd smart-academic-mgmt
    ```
-<<<<<<< HEAD
 
 2. Create the `.env` file and place it in the root of the project:
 
    ```env
-=======
->>>>>>> cd5832703411c3a69a9e42d92b4cc16368716063
    SECRET_KEY=super-secret-key
    DB_NAME=db_name
    DB_USER=user_name
@@ -101,7 +85,6 @@ Prerequisites: Python3, uv, PostgreSQL, git
    DB_HOST=host_name
    DB_PORT=port
    ```
-<<<<<<< HEAD
 
    `DB_PORT` is usually `5432`, if you are using the default PostgreSQL setup.
 
@@ -110,43 +93,6 @@ Prerequisites: Python3, uv, PostgreSQL, git
    ```sql
    CREATE DATABASE db_name;
    ```
-=======
-   Change the values to match the credentials of your psql database
-   `DB_PORT` is usually `5432`
-
-3. Set up the PostgreSQL database:
-
-   ```
-   CREATE DATABASE db_name
-   ```
-
-   ```
-   psql -d db_name -U postgres -f database/create_tables.sql
-   ```
-
-   The file path can change depending on where your database is located.
-
-4. Set up the admin account.
-
-   Now, you will need to bootstrap an admin account to actually log in to the system.
-
-   ```
-   uv run python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-admin-password'))"
-   ```
-
-   This command will give you a hash value, like so: `scrypt:32768:8:1$zHf5vC886y3Bu...`
-
-   Copy the entire result and run this SQL query in the PostgreSQL database that you just created:
-
-   ```
-   INSERT INTO users (email, role, password_hash)
-   VALUES ('admin@example.com', 'admin', '<your_hash_that_you_copied>');
-   ```
-
-5. Using Python (I recommend this for testing):
-
-   Set up the project dependencies:
->>>>>>> cd5832703411c3a69a9e42d92b4cc16368716063
 
    Then run:
 
@@ -164,17 +110,11 @@ Prerequisites: Python3, uv, PostgreSQL, git
    python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-admin-password'))"
    ```
 
-<<<<<<< HEAD
-=======
-   Run the app:
-
->>>>>>> cd5832703411c3a69a9e42d92b4cc16368716063
    This will return a hash value that looks something like:
 
    ```text
    scrypt:32768:8:1$zHf5vC886y3Bu...
    ```
-<<<<<<< HEAD
 
    Copy the entire result, then run this SQL query in the database you just created:
 
@@ -227,33 +167,6 @@ Prerequisites: Python3, uv, PostgreSQL, git
 
 ## Future Enhancements
 This system can be extended to add other functionalities:
-=======
-   uv run app.py
-   ```
-
-6. Using Docker (Recommended for actual prod):
-
-   Build the container:
-
-   ```
-   docker build -t student-mgmt-sys .
-   ```
-
-   Change the `DB_HOST` in the `.env` file to `host.docker.internal`.
-
-   This is required because the app is running inside the container, and `localhost` from inside Docker points to the container itself, not your host machine.
-
-   Run the container:
-
-   ```
-   docker run -p 8080:8080 --env-file .env student-mgmt-sys
-   ```
-
-7. Open `http://localhost:8080` in a browser, and et voila!
-
-## Future Enhancements
-These are enhancements that could be added in a full-fledged system:
->>>>>>> cd5832703411c3a69a9e42d92b4cc16368716063
 * Attendance management
 * Frontend improvements
 * Bulk relationship adding (maybe using CSV files)

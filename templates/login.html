@@ -55,28 +55,6 @@
         margin-bottom: 0.35rem;
     }
 
-    .secret-admin-login {
-        position: absolute;
-        top: 0.35rem;
-        right: 0.35rem;
-        z-index: 10;
-    }
-
-    .secret-admin-btn {
-        display: inline-block;
-        width: 2rem;
-        height: 2rem;
-        border-radius: var(--radius);
-        border: 1px solid var(--border-color);
-        background-color: var(--surface-color);
-        opacity: 0.35;
-    }
-
-    .secret-admin-btn:hover {
-        opacity: 0.9;
-        border-color: var(--accent-color);
-    }
-
     .role-selector {
         display: flex;
         gap: 0.3rem;
@@ -207,14 +185,6 @@
 </style>
 {% endblock %} {% block body %}
 <section class="login-shell">
-    <div class="secret-admin-login">
-        <a
-            href="{{ url_for('admin.admin_home') }}"
-            title="super secret admin access button (DEV)"
-            class="secret-admin-btn"
-        ></a>
-    </div>
-
     <div class="section-block login-card">
         <div class="login-left">
             <h1 class="login-title">Smart Academic Management System</h1>
@@ -288,9 +258,7 @@
                     </button>
                     {% if role in ['student', 'teacher'] %}
                     <div class="login-request">
-                        <a
-                            href="{{ url_for('request_account', role=role) }}"
-                        >
+                        <a href="{{ url_for('request_account', role=role) }}">
                             Need an account? Request one here.
                         </a>
                     </div>
